@@ -1,0 +1,136 @@
+/* Global Styles */
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  text-align: center;
+  background: linear-gradient(60deg, #ffcc00, #ff6600, #ff3300);
+  background-size: 400% 400%;
+  animation: waveBackground 12s ease infinite;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  font-size: 16px;
+}
+
+@keyframes waveBackground {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+header {
+  background-color: #ffcc00;
+  padding: 20px 0;
+  font-size: 24px;
+  color: white;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+  margin: 0;
+  font-weight: bold;
+}
+
+nav {
+  margin-top: 10px;
+}
+
+nav a {
+  text-decoration: none;
+  color: #333;
+  font-size: 18px;
+  font-weight: 500;
+  padding: 10px 20px;
+  background-color: #fff;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+}
+
+nav a:hover {
+  background-color: #ff6600;
+  color: #fff;
+}
+
+/* Section styles */
+h2 {
+  font-size: 30px;
+  margin: 20px 0;
+  color: #333;
+}
+
+main {
+  padding: 30px;
+  background-color: #ffffff; 
+  border-radius: 10px;
+  box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+  animation: fadeIn 2s ease-in-out; 
+}
+
+@keyframes fadeIn {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+/* Menu and Cart Layout */
+.menu, #cart-items {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 30px;
+}
+
+.item {
+  border: 1px solid #ddd;
+  padding: 20px;
+  margin: 15px;
+  background-color: #fff;
+  border-radius: 8px;
+  width: 250px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+.item:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+/* Cart Styles */
+#cart-items div {
+  background-color: white;
+  padding: 10px;
+  margin: 10px;
+  border-radius: 5px;
+}
+
+.clear-cart-btn, .cart-btn {
+  background-color: #ff6600;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.clear-cart-btn:hover, .cart-btn:hover {
+  background-color: #cc5500;
+  transform: scale(1.05);
+}
+
+/* Add to Cart Buttons */
+.menu .menu-item button {
+  background-color: #ff6600;
+  color: white;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 5px;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.menu .menu-item button:hover {
+  background-color: #cc5500;
+  transform: scale(1.1);
+}

@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout - Conc-A-Noodle</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>Checkout</h1>
+        <nav>
+            <a href="cart.html">Back to Cart</a>
+        </nav>
+    </header>
+
+    <main>
+        <h2>Order Summary</h2>
+        <div id="order-summary"></div>
+        <h3>Total: $<span id="checkout-total">0</span></h3>
+
+        <!-- Dorm Selection Section -->
+        <h2 style="font-weight: bold;">Enter Dorm Information</h2>
+        <div>
+            <label for="dorm" style="font-weight: bold;">Select your dorm:</label>
+            <select id="dorm" name="dorm" onchange="showDormInput()">
+                <option value="">Select Dorm</option>
+                <option value="rho">Rho</option>
+                <option value="sigma">Sigma</option>
+                <option value="uppers">Uppers</option>
+                <option value="lowers">Lowers</option>
+                <option value="other">Other</option>
+            </select>
+        </div>
+
+        <!-- Dorm input based on selection -->
+        <div id="dorm-input-container" style="display:none;">
+            <label id="dorm-label" for="dorm-input" style="font-weight: bold;"></label>
+            <input type="text" id="dorm-input" placeholder="Enter Room Number or Dorm Name">
+        </div>
+
+        <!-- Confirm Button -->
+        <button id="confirmOrder" onclick="confirmOrder()">Confirm Order</button>
+        <a href="checkout2.html">
+            <button id="proceedToPayment" style="display:none;">Proceed to Payment</button>
+        </a>
+    </main>
+
+    <script src="script.js"></script>
+
+    <script>
+      // Show or hide dorm input based on selection
+      function showDormInput() {
+            const dormSelect = document.getElementById('dorm');
+            const dormInputContainer = document.getElementById('dorm-input-container');
+            const dormLabel = document.getElementById('dorm-label');
+            const dormInput = document.getElementById('dorm-input');
+
+            const selectedDorm = dormSelect.value;
+
+            // Show or hide the input container based on the selection
+            if (selectedDorm === "rho" || selectedDorm === "sigma" || selectedDorm === "uppers" || selectedDorm === "lowers") {
+                dormInputContainer.style.display = 'block';
+                dormLabel.innerText = "Enter your room number:";
+                dormInput.type = "number"; // Use number input for room numbers
+            } else if (selectedDorm === "other") {
+                dormInputContainer.style.display = 'block';
+                dormLabel.innerText = "Enter your dorm name or custom location:";
+                dormInput.type = "text"; // Use text input for custom dorm
+            } else {
+                dormInputContainer.style.display = 'none'; // Hide input if no dorm selected
+            }
+        }
+
+      // Function to confirm order
+      function confirmOrder() {
+          // Store dorm information and show the next step
+          const dorm = document.getElementById("dorm").value;
+          const dormInput = document.getElementById("dorm-input").value;
+
+          if (!dorm) {
+              alert("Please select a dorm.");
+              return;
+          }
+
+          // Store the dorm data in localStorage
+          localStorage.setItem("dorm", dorm);
+          localStorage.setItem("dormInput", dormInput);
+
+          // Show proceed button
+          document.getElementById("proceedToPayment").style.display = 'inline-block';
+          alert("Your order has been confirmed. Proceed to the payment section.");
+      }
+
+      document.addEventListener("DOMContentLoaded", function () {
+            const totalAmount = localStorage.getItem("cartTotal") || "0.00";
+            // Load cart total
+            document.getElementById("checkout-total").innerText = totalAmount;
+        });
+    </script>
+</body>
+</html>
