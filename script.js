@@ -5,7 +5,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const confirmBtn = document.getElementById("confirm-btn");
     if (confirmBtn) {
-        confirmBtn.addEventListener("click", goToConfirm);
+        confirmBtn.addEventListener("click", sendOrderEmail);
     }
 });
 
@@ -28,54 +28,44 @@ function displayCart() {
     document.getElementById("total-price").innerText = total.toFixed(2);
 }
 
-// Submit order to Google Apps Script
-function goToConfirm() {
+// Send order via email
+function sendOrderEmail() {
     const name = document.getElementById("name").value;
     const dorm = document.getElementById("dorm").value;
 
     if (name && dorm) {
-        let cartDetails = [];
+        let cartDetails = "";
+        let total = 0;
+
         for (let item in cart) {
             if (cart[item] > 0) {
-                cartDetails.push({
-                    item: item.replace("-", " "),
-                    quantity: cart[item],
-                    price: prices[item],
-                    total: prices[item] * cart[item],
-                });
+                let itemTotal = prices[item] * cart[item];
+                total += itemTotal;
+                cartDetails += `${cart[item]}x ${item.replace("-", " ")} ($${itemTotal})%0D%0A`;
             }
         }
 
-        const orderData = {
-            name: name,
-            dorm: dorm,
-            order: cartDetails,
-            total: cartDetails.reduce((sum, item) => sum + item.total, 0), // Calculate total
-        };
+        let subject = "New Order from Conc-A-Noodle";
+        let body = `Name: ${name}%0D%0A`
+                 + `Dorm: ${dorm}%0D%0A`
+                 + `Order:%0D%0A${cartDetails}%0D%0A`
+                 + `Total: $${total.toFixed(2)}`;
 
-        fetch(
-            "https://script.google.com/macros/s/AKfycbzBvdYdfLpTTgjGTd-3kC75jlh5UQYSoQmmUikCumKKAMOMMtE1B5zVbQ_yxE_m__rJpg/exec",
-            {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(orderData),
-            }
-        )
-            .then((response) => response.json())
-            .then((data) => {
-                console.log("Order submitted:", data);
-                alert("Order confirmed! Thank you!");
-                window.location.href = "thank-you.html";
-            })
-            .catch((error) => {
-                console.error("Error:", error);
-                alert("There was an issue with your order. Please try again.");
-            });
+        let mailtoLink = `mailto:and.sallad@gmail.com?subject=${subject}&body=${body}`;
+        window.location.href = mailtoLink;
+
+        alert("Order email will be sent via your default email client.");
+        localStorage.removeItem("cart");  // Clear cart after order is placed
+        window.location.href = "thank-you.html";
     } else {
         alert("Please fill out both your name and dorm.");
     }
+}
+
+// Go to checkout page
+function goToCheckout() {
+    localStorage.setItem("cart", JSON.stringify(cart));
+    window.location.href = "checkout.html";
 }
 
 // Go back to the shopping page
