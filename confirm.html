@@ -56,27 +56,7 @@
                 totalPrice: totalAmount
             };
 
-            // Send the order data to the server using AJAX
-            fetch('email.php', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(orderData),
-            })
-            .then(response => response.text())
-            .then(data => {
-                if (data.includes("successfully")) {
-                    alert("Your order has been confirmed!");
-                    window.location.href = 'thank-you.html';
-                } else {
-                    alert("There was an error with your order. Please try again.");
-                }
-            })
-            .catch(error => {
-                console.error("Error:", error);
-                alert("There was an error with the order. Please try again.");
-            });
+            
         }
     </script>
 </body>
