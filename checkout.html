@@ -14,10 +14,12 @@
 <body>
     <h1>Checkout</h1>
     
+    <!-- Cart items will be displayed here -->
     <div id="cart-items"></div>
+
     <h2>Total: $<span id="total-price">0</span></h2>
 
-    <!-- Name and Dorm Information -->
+    <!-- New fields for Name and Dorm Information -->
     <div class="input-field">
         <label for="name">Name:</label>
         <input type="text" id="name" placeholder="Enter your name" required>
@@ -27,9 +29,60 @@
         <input type="text" id="dorm" placeholder="Enter your dorm" required>
     </div>
 
-    <button id="confirm-btn">Confirm Order</button>
+    <button id="confirm-btn" onclick="goToConfirm()">Confirm Order</button>
     <button onclick="goBack()">Go Back</button>
 
-    <script src="script.js"></script>
+    <script>
+        let cart = JSON.parse(localStorage.getItem('cart')) || {};
+        let prices = { beef: 6, regular: 6, 'one-scoop': 3, 'two-scoops': 5 };
+        
+        // Display cart items in the checkout page
+        function displayCart() {
+            let cartContainer = document.getElementById('cart-items');
+            cartContainer.innerHTML = '';
+            let total = 0;
+            
+            // Loop through cart and display each item
+            for (let item in cart) {
+                if (cart[item] > 0) {
+                    let price = prices[item] * cart[item];
+                    total += price;
+                    cartContainer.innerHTML += `<p>${item.replace('-', ' ')}: ${cart[item]} - $${price}</p>`;
+                }
+            }
+            document.getElementById('total-price').innerText = total.toFixed(2);
+        }
+        
+        // Go to the confirm page and save name and dorm info to localStorage
+        function goToConfirm() {
+            const name = document.getElementById('name').value;
+            const dorm = document.getElementById('dorm').value;
+
+            if (name && dorm) {
+                const userInfo = { name, dorm };
+                
+                // Collect the cart items and total price
+                let cartDetails = [];
+                for (let item in cart) {
+                    if (cart[item] > 0) {
+                        cartDetails.push({ item: item.replace('-', ' '), quantity: cart[item], price: prices[item], total: prices[item] * cart[item] });
+                    }
+                }
+
+                // Save user and cart data to localStorage and go to confirm page
+                localStorage.setItem('order', JSON.stringify({ userInfo, cartDetails }));
+                window.location.href = 'confirm.html';
+            } else {
+                alert("Please fill out both your name and dorm.");
+            }
+        }
+
+        // Go back to the shopping page
+        function goBack() {
+            window.location.href = 'index.html';
+        }
+        
+        displayCart(); // Display the cart items when the page loads
+    </script>
 </body>
 </html>
