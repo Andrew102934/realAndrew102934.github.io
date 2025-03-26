@@ -19,10 +19,7 @@
     <button id="confirm-btn" onclick="confirmOrder()" disabled>Confirm Order</button>
     
     <script>
-        // Retrieving the cart from local storage
-        let orderData = JSON.parse(localStorage.getItem('order'));
-        let cart = orderData.cartDetails || [];
-        let prices = { beef: 6, regular: 6, 'one-scoop': 3, 'two-scoops': 5 };
+        let cart = JSON.parse(localStorage.getItem('cart')) || [];
         let selectedPayment = '';
         
         // Calculate total price from the cart
@@ -31,29 +28,56 @@
             cart.forEach(item => {
                 total += item.total;
             });
-            document.getElementById('total-price').innerText = total.toFixed(2); // Display total price
+            document.getElementById('total-price').innerText = total.toFixed(2);
         }
 
-        // Select the payment method (Venmo or Cash)
         function selectPayment(method) {
             selectedPayment = method;
-            document.getElementById('confirm-btn').disabled = false; // Enable the Confirm button when a payment method is selected
+            document.getElementById('confirm-btn').disabled = false; // Enable the Confirm button
         }
 
-        // Confirm the order and handle the payment method
+        // Function to handle order confirmation and send data via AJAX
         function confirmOrder() {
-            const totalAmount = parseFloat(document.getElementById('total-price').innerText); // Get total amount from the page
+            const name = document.getElementById('name').value;
+            const dorm = document.getElementById('dorm').value;
+            const totalAmount = parseFloat(document.getElementById('total-price').innerText);
             
-            if (selectedPayment === 'venmo') {
-                window.location.href = `https://venmo.com/?txn=pay&amount=${totalAmount}&recipients=@Andrew-Salladin`; // Redirect to Venmo
-            } else if (selectedPayment === 'cash') {
-                window.location.href = 'thank-you.html'; // Redirect to thank you page for cash payment
-            } else {
-                alert("Please select a payment method before confirming.");
+            if (!name || !dorm) {
+                alert("Please fill out all fields.");
+                return;
             }
-        }
 
-        calculateTotal(); // Run the calculateTotal function when the page loads
+            // Collect cart data to send
+            const orderData = {
+                name: name,
+                dorm: dorm,
+                cart: JSON.stringify(cart),  // Send cart data as JSON
+                paymentMethod: selectedPayment,
+                totalPrice: totalAmount
+            };
+
+            // Send the order data to the server using AJAX
+            fetch('email.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(orderData),
+            })
+            .then(response => response.text())
+            .then(data => {
+                if (data.includes("successfully")) {
+                    alert("Your order has been confirmed!");
+                    window.location.href = 'thank-you.html';
+                } else {
+                    alert("There was an error with your order. Please try again.");
+                }
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                alert("There was an error with the order. Please try again.");
+            });
+        }
     </script>
 </body>
-</
+</html>
