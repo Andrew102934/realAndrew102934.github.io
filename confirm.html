@@ -19,37 +19,41 @@
     <button id="confirm-btn" onclick="confirmOrder()" disabled>Confirm Order</button>
     
     <script>
+        // Retrieving the cart from local storage
         let cart = JSON.parse(localStorage.getItem('cart')) || [];
         let prices = { beef: 6, regular: 6, 'one-scoop': 3, 'two-scoops': 5 };
         let selectedPayment = '';
-        
-        // Calculate total price
+
+        // Calculate total price from the cart
         function calculateTotal() {
             let total = 0;
-            cart.forEach(item => {
-                total += (item.price * item.quantity);
-            });
-            document.getElementById('total-price').innerText = total.toFixed(2); // Display total
+            // Loop through the cart and calculate total
+            for (let item in cart) {
+                if (cart[item] > 0) {
+                    total += (prices[item] * cart[item]);
+                }
+            }
+            document.getElementById('total-price').innerText = total.toFixed(2); // Display total price
         }
-        
-        // Select the payment method
+
+        // Select the payment method (Venmo or Cash)
         function selectPayment(method) {
             selectedPayment = method;
-            document.getElementById('confirm-btn').disabled = false; // Enable confirm button
+            document.getElementById('confirm-btn').disabled = false; // Enable the Confirm button when a payment method is selected
         }
-        
-        // Function to redirect to Venmo with the correct amount
+
+        // Function to handle Venmo payment redirection
         function venmoPayment(amount) {
-            const venmoURL = `https://venmo.com/?txn=pay&amount=${amount}&recipients=@Andrew-Salladin`;
-            window.location.href = venmoURL; // Redirect to Venmo
+            const venmoURL = `https://venmo.com/?txn=pay&amount=${amount}&recipients=@Andrew-Salladin`; // Use your Venmo username here
+            window.location.href = venmoURL; // Redirect to Venmo to pay
         }
-        
-        // Redirect to Thank You page for Cash payments
+
+        // Function to handle cash payment and redirect to thank-you page
         function cashPayment() {
-            window.location.href = 'thank-you.html'; // Redirect to the thank you page for cash payment
+            window.location.href = 'thank-you.html'; // Redirect to thank you page for cash payment
         }
-        
-        // Confirm order and handle payment method
+
+        // Confirm the order and handle the payment method
         function confirmOrder() {
             const totalAmount = parseFloat(document.getElementById('total-price').innerText); // Get total amount from the page
             
@@ -57,12 +61,13 @@
                 venmoPayment(totalAmount); // Redirect to Venmo with the total amount
             } else if (selectedPayment === 'cash') {
                 cashPayment(); // Redirect to thank you page for cash payment
+            } else {
+                alert("Please select a payment method before confirming.");
             }
         }
-        
-        // Calculate total price when page loads
+
+        // Run the calculateTotal function when the page loads
         calculateTotal(); 
     </script>
-    <script src="script.js"></script>
 </body>
 </html>
