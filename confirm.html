@@ -23,30 +23,35 @@
         let prices = { beef: 6, regular: 6, 'one-scoop': 3, 'two-scoops': 5 };
         let selectedPayment = '';
         
+        // Calculate total price
         function calculateTotal() {
             let total = 0;
             for (let item in cart) {
                 total += (cart[item] * prices[item]);
             }
-            document.getElementById('total-price').innerText = total.toFixed(2);
+            document.getElementById('total-price').innerText = total.toFixed(2); // Display total with 2 decimals
         }
         
+        // Select the payment method
         function selectPayment(method) {
             selectedPayment = method;
-            document.getElementById('confirm-btn').disabled = false;
+            document.getElementById('confirm-btn').disabled = false; // Enable confirm button
         }
         
+        // Function to redirect to Venmo with the correct amount
         function venmoPayment(amount) {
             const venmoURL = `https://venmo.com/?txn=pay&amount=${amount}&recipients=@Andrew-Salladin`;
-            window.location.href = venmoURL;
+            window.location.href = venmoURL; // Redirect to Venmo
         }
         
+        // Redirect to Thank You page for Cash payments
         function cashPayment() {
-            window.location.href = 'thank-you.html';  // Redirect to the thank you page for cash payment
+            window.location.href = 'thank-you.html'; // Redirect to the thank you page for cash payment
         }
         
+        // Confirm order and handle payment method
         function confirmOrder() {
-            const totalAmount = parseFloat(document.getElementById('total-price').innerText);
+            const totalAmount = parseFloat(document.getElementById('total-price').innerText); // Get total amount from the page
             
             if (selectedPayment === 'venmo') {
                 venmoPayment(totalAmount); // Redirect to Venmo with the total amount pre-filled
@@ -55,7 +60,8 @@
             }
         }
         
-        calculateTotal();  // Calculate the total price when the page loads
+        // Calculate total price when page loads
+        calculateTotal(); 
     </script>
     <script src="script.js"></script>
 </body>
