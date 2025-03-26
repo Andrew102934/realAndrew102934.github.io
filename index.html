@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Conc-A-Noodle Shop</title>
+    <title>Conc-A-Noodle</title>
     <style>
         body { font-family: Arial, sans-serif; text-align: center; }
         .item { margin: 20px; }
@@ -57,7 +57,19 @@
     </div>
     <br>
     <button onclick="goToCheckout()">Go to Checkout</button>
+    
+    <script>
+        let cart = { beef: 0, regular: 0, 'one-scoop': 0, 'two-scoops': 0 };
 
-    <script src="script.js"></script>
+        function changeQuantity(item, change) {
+            cart[item] = Math.max(0, cart[item] + change);
+            document.getElementById(`${item}-qty`).innerText = cart[item];
+        }
+
+        function goToCheckout() {
+            localStorage.setItem('cart', JSON.stringify(cart));
+            window.location.href = 'checkout.html';
+        }
+    </script>
 </body>
 </html>
