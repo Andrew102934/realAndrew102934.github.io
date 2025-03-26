@@ -20,17 +20,22 @@
     <h2>Total: $<span id="total-price">0</span></h2>
 
     <!-- New fields for Name and Dorm Information -->
-    <div class="input-field">
-        <label for="name">Name:</label>
-        <input type="text" id="name" placeholder="Enter your name" required>
-    </div>
-    <div class="input-field">
-        <label for="dorm">Dorm:</label>
-        <input type="text" id="dorm" placeholder="Enter your dorm" required>
-    </div>
+    <form id="checkout-form" method="POST" action="https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID/exec">
+        <div class="input-field">
+            <label for="name">Name:</label>
+            <input type="text" id="name" name="name" placeholder="Enter your name" required>
+        </div>
+        <div class="input-field">
+            <label for="dorm">Dorm:</label>
+            <input type="text" id="dorm" name="dorm" placeholder="Enter your dorm" required>
+        </div>
+        
+        <!-- Hidden field to send cart items as order details -->
+        <input type="hidden" id="order" name="order">
 
-    <button onclick="goToConfirm()">Confirm Order</button>
-    <button onclick="goBack()">Go Back</button>
+        <button type="submit">Submit Order</button>
+        <button type="button" onclick="goBack()">Go Back</button>
+    </form>
     
     <script>
         let cart = JSON.parse(localStorage.getItem('cart')) || {};
@@ -51,22 +56,12 @@
                 }
             }
             document.getElementById('total-price').innerText = total.toFixed(2);
+
+            // Save order data in the hidden field
+            const orderDetails = JSON.stringify(cart);
+            document.getElementById('order').value = orderDetails;
         }
         
-        // Go to the confirm page and save name and dorm info to localStorage
-        function goToConfirm() {
-            const name = document.getElementById('name').value;
-            const dorm = document.getElementById('dorm').value;
-
-            if (name && dorm) {
-                const userInfo = { name, dorm };
-                localStorage.setItem('userInfo', JSON.stringify(userInfo)); // Save name and dorm info
-                window.location.href = 'confirm.html'; // Go to the confirm page
-            } else {
-                alert("Please fill out both your name and dorm.");
-            }
-        }
-
         // Go back to the shopping page
         function goBack() {
             window.location.href = 'index.html';
