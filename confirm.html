@@ -29,7 +29,7 @@
             cart.forEach(item => {
                 total += (item.price * item.quantity);
             });
-            document.getElementById('total-price').innerText = total.toFixed(2); // Display total with 2 decimals
+            document.getElementById('total-price').innerText = total.toFixed(2); // Display total
         }
         
         // Select the payment method
@@ -54,7 +54,7 @@
             const totalAmount = parseFloat(document.getElementById('total-price').innerText); // Get total amount from the page
             
             if (selectedPayment === 'venmo') {
-                venmoPayment(totalAmount); // Redirect to Venmo with the total amount pre-filled
+                venmoPayment(totalAmount); // Redirect to Venmo with the total amount
             } else if (selectedPayment === 'cash') {
                 cashPayment(); // Redirect to thank you page for cash payment
             }
