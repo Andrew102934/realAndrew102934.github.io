@@ -1,146 +1,84 @@
-// Initialize cart in localStorage if it doesn't exist
-if (!localStorage.getItem('cart')) {
-  localStorage.setItem('cart', JSON.stringify([]));
-}
-
-// Update cart in localStorage
-function updateCart() {
-  const cart = JSON.parse(localStorage.getItem('cart'));
-  localStorage.setItem('cart', JSON.stringify(cart));
-}
-
-// Add item to cart
-function addToCart(item) {
-  const cart = JSON.parse(localStorage.getItem('cart'));
-  cart.push(item);
-  updateCart();
-}
-
-// Remove item from cart
-function removeFromCart(index) {
-  const cart = JSON.parse(localStorage.getItem('cart'));
-  cart.splice(index, 1);
-  updateCart();
-}
-
-// Get the cart items
-function getCart() {
-  return JSON.parse(localStorage.getItem('cart'));
-}
-
-// Update cart display
-function updateCartDisplay() {
-  const cart = getCart();
-  let cartHTML = '';
-  let totalPrice = 0;
-
-  cart.forEach((item, index) => {
-    cartHTML += `
-      <div class="cart-item">
-        <span>${item.name}</span>
-        <span>Quantity: ${item.quantity}</span>
-        <span>$${(item.price * item.quantity).toFixed(2)}</span>
-        <button onclick="removeFromCart(${index})">Remove</button>
-      </div>
-    `;
-    totalPrice += item.price * item.quantity;
-  });
-
-  document.getElementById('cart-items').innerHTML = cartHTML;
-  document.getElementById('total-price').innerHTML = `$${totalPrice.toFixed(2)}`;
-}
-
-// Add to cart from shopping page
-function handleAddToCart(name, price) {
-  const quantity = parseInt(document.getElementById(name + '-quantity').value);
-  if (quantity > 0) {
-    addToCart({ name, price, quantity });
-    alert(`${name} added to cart!`);
-  }
-}
-
-// Initialize shopping cart page with cart data
-function initializeShoppingPage() {
-  const cart = getCart();
-  cart.forEach(item => {
-    const quantityInput = document.getElementById(item.name + '-quantity');
-    if (quantityInput) {
-      quantityInput.value = item.quantity;
+document.addEventListener("DOMContentLoaded", function () {
+    if (document.getElementById("cart-items")) {
+        displayCart();
     }
-  });
-}
 
-// Handle checkout page
-function initializeCheckoutPage() {
-  updateCartDisplay();
-}
-
-// Confirm order page - Handle payment selection
-function confirmOrder(paymentMethod) {
-  const cart = getCart();
-  const totalPrice = cart.reduce((total, item) => total + item.price * item.quantity, 0);
-  const name = document.getElementById('name').value;  // Get the name from the checkout page
-  const dorm = document.getElementById('dorm').value;  // Get the dorm from the checkout page
-  
-  // Prepare the cart details
-  const cartDetails = cart.map(item => ({
-    name: item.name,
-    quantity: item.quantity,
-    price: item.price,
-    total: item.price * item.quantity
-  }));
-
-  // Prepare the order details
-  const orderDetails = {
-    userInfo: {
-      name: name,
-      dorm: dorm
-    },
-    cart: cartDetails,
-    totalPrice: totalPrice,
-    paymentMethod: paymentMethod
-  };
-
-  // Send order data to Google Apps Script (Web App)
-  fetch('https://script.google.com/macros/s/AKfycby7Pte6LczOeD2AIGcWUIZuCMTcxM1VkWyiZpeHPhwUFCB1Mn3RH-7PF5uTdXQw-VVMJQ/exec', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json', // Use JSON content type
-    },
-    body: JSON.stringify(orderDetails)  // Send the entire order details
-  })
-  .then(response => response.json())
-  .then(data => {
-    console.log('Order submitted:', data);
-    alert('Order confirmed! Thank you!');
-    window.location.href = 'thank-you.html'; // Redirect to a thank-you page
-  })
-  .catch(error => {
-    console.error('Error:', error);
-    alert('There was an issue with your order. Please try again.');
-  });
-}
-
-// Confirm order page - Handle payment button click
-document.addEventListener('DOMContentLoaded', () => {
-  if (document.body.id === 'shopping-page') {
-    initializeShoppingPage();
-  } else if (document.body.id === 'checkout-page') {
-    initializeCheckoutPage();
-
-    // Ensure the button exists before adding the event listener
-    const confirmBtn = document.getElementById('confirm-btn');
+    const confirmBtn = document.getElementById("confirm-btn");
     if (confirmBtn) {
-      confirmBtn.addEventListener('click', () => {
-        const selectedPayment = document.querySelector('input[name="payment-method"]:checked');
-        if (selectedPayment) {
-          confirmOrder(selectedPayment.value);
-        } else {
-          alert('Please select a payment method');
-        }
-      });
-    } else {
-      console.error('Confirm button not found');
+        confirmBtn.addEventListener("click", goToConfirm);
     }
-  }
 });
+
+let cart = JSON.parse(localStorage.getItem("cart")) || {};
+let prices = { beef: 6, regular: 6, "one-scoop": 3, "two-scoops": 5 };
+
+// Display cart items in the checkout page
+function displayCart() {
+    let cartContainer = document.getElementById("cart-items");
+    cartContainer.innerHTML = "";
+    let total = 0;
+
+    for (let item in cart) {
+        if (cart[item] > 0) {
+            let price = prices[item] * cart[item];
+            total += price;
+            cartContainer.innerHTML += `<p>${item.replace("-", " ")}: ${cart[item]} - $${price}</p>`;
+        }
+    }
+    document.getElementById("total-price").innerText = total.toFixed(2);
+}
+
+// Submit order to Google Apps Script
+function goToConfirm() {
+    const name = document.getElementById("name").value;
+    const dorm = document.getElementById("dorm").value;
+
+    if (name && dorm) {
+        let cartDetails = [];
+        for (let item in cart) {
+            if (cart[item] > 0) {
+                cartDetails.push({
+                    item: item.replace("-", " "),
+                    quantity: cart[item],
+                    price: prices[item],
+                    total: prices[item] * cart[item],
+                });
+            }
+        }
+
+        const orderData = {
+            name: name,
+            dorm: dorm,
+            order: cartDetails,
+            total: cartDetails.reduce((sum, item) => sum + item.total, 0), // Calculate total
+        };
+
+        fetch(
+            "https://script.google.com/macros/s/AKfycbzBvdYdfLpTTgjGTd-3kC75jlh5UQYSoQmmUikCumKKAMOMMtE1B5zVbQ_yxE_m__rJpg/exec",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(orderData),
+            }
+        )
+            .then((response) => response.json())
+            .then((data) => {
+                console.log("Order submitted:", data);
+                alert("Order confirmed! Thank you!");
+                window.location.href = "thank-you.html";
+            })
+            .catch((error) => {
+                console.error("Error:", error);
+                alert("There was an issue with your order. Please try again.");
+            });
+    } else {
+        alert("Please fill out both your name and dorm.");
+    }
+}
+
+// Go back to the shopping page
+function goBack() {
+    window.location.href = "index.html";
+}
