@@ -44,12 +44,12 @@
 
         // Function to handle Venmo payment redirection
         function venmoPayment(amount) {
-    // Add a delay to avoid rapid redirects
-    setTimeout(() => {
-        const venmoURL = `https://venmo.com/?txn=pay&amount=${amount}&recipients=@Andrew-Salladin`;
-        window.location.href = venmoURL; // Redirect to Venmo after a slight delay
-    }, 500); // 500 milliseconds delay before redirection
-}
+            // Add a delay to avoid rapid redirects
+            setTimeout(() => {
+                const venmoURL = `https://venmo.com/?txn=pay&amount=${amount}&recipients=@Andrew-Salladin`;
+                window.location.href = venmoURL; // Redirect to Venmo after a slight delay
+            }, 500); // 500 milliseconds delay before redirection
+        }
 
 
         // Function to handle cash payment and redirect to thank-you page
