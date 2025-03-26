@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirm Order - Conc-A-Noodle</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; }
+        button { margin: 10px; padding: 10px 20px; font-size: 16px; }
+    </style>
+</head>
+<body>
+    <h1>Confirm Your Order</h1>
+    <h2>Total: $<span id="total-price">0</span></h2>
+    <p>Select a payment method:</p>
+    <button onclick="selectPayment('venmo')">Pay with Venmo</button>
+    <button onclick="selectPayment('cash')">Pay with Cash</button>
+    <br>
+    <button id="confirm-btn" onclick="confirmOrder()" disabled>Confirm Order</button>
+    
+    <script>
+        let cart = JSON.parse(localStorage.getItem('cart')) || {};
+        let prices = { beef: 6, regular: 6, 'one-scoop': 3, 'two-scoops': 5 };
+        let selectedPayment = '';
+        
+        function calculateTotal() {
+            let total = 0;
+            for (let item in cart) {
+                total += (cart[item] * prices[item]);
+            }
+            document.getElementById('total-price').innerText = total;
+        }
+        
+        function selectPayment(method) {
+            selectedPayment = method;
+            document.getElementById('confirm-btn').disabled = false;
+        }
+        
+        function confirmOrder() {
+            alert(`Order confirmed! Payment method: ${selectedPayment}`);
+            localStorage.removeItem('cart');
+            window.location.href = 'index.html';
+        }
+        
+        calculateTotal();
+    </script>
+</body>
+</html>
