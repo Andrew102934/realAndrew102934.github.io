@@ -76,7 +76,6 @@ function initializeCheckoutPage() {
 }
 
 // Confirm order page - Handle payment selection
-// Confirm order page - Handle payment selection
 function confirmOrder(paymentMethod) {
   const cart = getCart();
   const totalPrice = cart.reduce((total, item) => total + item.price * item.quantity, 0);
@@ -124,15 +123,20 @@ document.addEventListener('DOMContentLoaded', () => {
     initializeShoppingPage();
   } else if (document.body.id === 'checkout-page') {
     initializeCheckoutPage();
-    // Confirm order logic for Venmo or Cash payment on confirmation page
+    
+    // Ensure the button exists before adding the event listener
     const confirmBtn = document.getElementById('confirm-btn');
-    confirmBtn.addEventListener('click', () => {
-      const selectedPayment = document.querySelector('input[name="payment-method"]:checked');
-      if (selectedPayment) {
-        confirmOrder(selectedPayment.value);
-      } else {
-        alert('Please select a payment method');
-      }
-    });
+    if (confirmBtn) {
+      confirmBtn.addEventListener('click', () => {
+        const selectedPayment = document.querySelector('input[name="payment-method"]:checked');
+        if (selectedPayment) {
+          confirmOrder(selectedPayment.value);
+        } else {
+          alert('Please select a payment method');
+        }
+      });
+    } else {
+      console.error('Confirm button not found');
+    }
   }
 });
