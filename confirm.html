@@ -17,61 +17,7 @@
     <button onclick="selectPayment('cash')">Pay with Cash</button>
     <br>
     <button id="confirm-btn" onclick="confirmOrder()" disabled>Confirm Order</button>
-    
-    <script>
-        // Retrieving the cart from local storage
-        let cart = JSON.parse(localStorage.getItem('cart')) || [];
-        let prices = { beef: 6, regular: 6, 'one-scoop': 3, 'two-scoops': 5 };
-        let selectedPayment = '';
 
-        // Calculate total price from the cart
-        function calculateTotal() {
-            let total = 0;
-            // Loop through the cart and calculate total
-            for (let item in cart) {
-                if (cart[item] > 0) {
-                    total += (prices[item] * cart[item]);
-                }
-            }
-            document.getElementById('total-price').innerText = total.toFixed(2); // Display total price
-        }
-
-        // Select the payment method (Venmo or Cash)
-        function selectPayment(method) {
-            selectedPayment = method;
-            document.getElementById('confirm-btn').disabled = false; // Enable the Confirm button when a payment method is selected
-        }
-
-        // Function to handle Venmo payment redirection
-        function venmoPayment(amount) {
-            // Add a delay to avoid rapid redirects
-            setTimeout(() => {
-                const venmoURL = `https://venmo.com/?txn=pay&amount=${amount}&recipients=@Andrew-Salladin`;
-                window.location.href = venmoURL; // Redirect to Venmo after a slight delay
-            }, 500); // 500 milliseconds delay before redirection
-        }
-
-
-        // Function to handle cash payment and redirect to thank-you page
-        function cashPayment() {
-            window.location.href = 'thank-you.html'; // Redirect to thank you page for cash payment
-        }
-
-        // Confirm the order and handle the payment method
-        function confirmOrder() {
-            const totalAmount = parseFloat(document.getElementById('total-price').innerText); // Get total amount from the page
-            
-            if (selectedPayment === 'venmo') {
-                venmoPayment(totalAmount); // Redirect to Venmo with the total amount
-            } else if (selectedPayment === 'cash') {
-                cashPayment(); // Redirect to thank you page for cash payment
-            } else {
-                alert("Please select a payment method before confirming.");
-            }
-        }
-
-        // Run the calculateTotal function when the page loads
-        calculateTotal(); 
-    </script>
+    <script src="script.js"></script>
 </body>
 </html>
