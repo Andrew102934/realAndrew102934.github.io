@@ -76,28 +76,46 @@ function initializeCheckoutPage() {
 }
 
 // Confirm order page - Handle payment selection
+// Confirm order page - Handle payment selection
 function confirmOrder(paymentMethod) {
   const cart = getCart();
   const totalPrice = cart.reduce((total, item) => total + item.price * item.quantity, 0);
+  const name = document.getElementById('name').value;  // Get the name from the checkout page
+  const dorm = document.getElementById('dorm').value;  // Get the dorm from the checkout page
   
-  if (paymentMethod === 'venmo') {
-    venmoPayment(totalPrice); // Redirect to Venmo with the total price
-  } else if (paymentMethod === 'cash') {
-    cashPayment(); // Redirect to thank you page for cash payment
-  } else {
-    alert('Please select a payment method!');
-  }
-}
+  // Prepare the order details
+  const orderDetails = {
+    name: name,
+    dorm: dorm,
+    order: cart,
+    total: totalPrice
+  };
 
-// Venmo payment redirection
-function venmoPayment(amount) {
-  const venmoURL = `https://venmo.com/?txn=pay&amount=${amount}&recipients=@Andrew-Salladin`;
-  window.location.href = venmoURL; // Redirect to Venmo
-}
-
-// Cash payment redirection
-function cashPayment() {
-  window.location.href = 'thank-you.html'; // Redirect to thank you page for cash payment
+  // Send order data to Google Apps Script (Web App)
+  fetch('https://script.google.com/macros/s/AKfycby7Pte6LczOeD2AIGcWUIZuCMTcxM1VkWyiZpeHPhwUFCB1Mn3RH-7PF5uTdXQw-VVMJQ/exec', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    body: new URLSearchParams({
+      name: name,
+      dorm: dorm,
+      order: JSON.stringify(cart),
+    })
+  })
+  .then(response => response.text())
+  .then(responseText => {
+    console.log(responseText);  // Log response from Google Apps Script (for debugging)
+    if (paymentMethod === 'venmo') {
+      venmoPayment(totalPrice);  // Redirect to Venmo
+    } else if (paymentMethod === 'cash') {
+      cashPayment();  // Redirect to cash payment thank-you page
+    }
+  })
+  .catch(error => {
+    alert("There was an error submitting your order. Please try again.");
+    console.error(error);
+  });
 }
 
 // Confirm order page - Handle payment button click
