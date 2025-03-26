@@ -19,16 +19,16 @@
     <button id="confirm-btn" onclick="confirmOrder()" disabled>Confirm Order</button>
     
     <script>
-        let cart = JSON.parse(localStorage.getItem('cart')) || {};
+        let cart = JSON.parse(localStorage.getItem('cart')) || [];
         let prices = { beef: 6, regular: 6, 'one-scoop': 3, 'two-scoops': 5 };
         let selectedPayment = '';
         
         // Calculate total price
         function calculateTotal() {
             let total = 0;
-            for (let item in cart) {
-                total += (cart[item] * prices[item]);
-            }
+            cart.forEach(item => {
+                total += (item.price * item.quantity);
+            });
             document.getElementById('total-price').innerText = total.toFixed(2); // Display total with 2 decimals
         }
         
