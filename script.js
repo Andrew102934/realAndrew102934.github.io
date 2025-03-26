@@ -2,17 +2,43 @@ document.addEventListener("DOMContentLoaded", function () {
     if (document.getElementById("cart-items")) {
         displayCart();
     }
-
+    
     const confirmBtn = document.getElementById("confirm-btn");
     if (confirmBtn) {
         confirmBtn.addEventListener("click", sendOrderEmail);
     }
+
+    updateDisplay(); // Ensure correct quantities display on load
 });
 
+// Load cart from local storage
 let cart = JSON.parse(localStorage.getItem("cart")) || {};
 let prices = { beef: 6, regular: 6, "one-scoop": 3, "two-scoops": 5 };
 
-// Display cart items in the checkout page
+// Ensure all items exist in cart to prevent errors
+if (!cart.beef) cart.beef = 0;
+if (!cart.regular) cart.regular = 0;
+if (!cart["one-scoop"]) cart["one-scoop"] = 0;
+if (!cart["two-scoops"]) cart["two-scoops"] = 0;
+
+// Update quantity display
+function updateDisplay() {
+    document.getElementById("beef-qty").innerText = cart.beef;
+    document.getElementById("regular-qty").innerText = cart.regular;
+    document.getElementById("one-scoop-qty").innerText = cart["one-scoop"];
+    document.getElementById("two-scoops-qty").innerText = cart["two-scoops"];
+}
+
+// Adjust item quantity
+function changeQuantity(item, amount) {
+    if (cart[item] + amount >= 0) {
+        cart[item] += amount;
+    }
+    updateDisplay();
+    localStorage.setItem("cart", JSON.stringify(cart));
+}
+
+// Display cart items on checkout page
 function displayCart() {
     let cartContainer = document.getElementById("cart-items");
     cartContainer.innerHTML = "";
@@ -22,7 +48,7 @@ function displayCart() {
         if (cart[item] > 0) {
             let price = prices[item] * cart[item];
             total += price;
-            cartContainer.innerHTML += `<p>${item.replace("-", " ")}: ${cart[item]} - $${price}</p>`;
+            cartContainer.innerHTML += `<p>${cart[item]}x ${item.replace("-", " ")} - $${price}</p>`;
         }
     }
     document.getElementById("total-price").innerText = total.toFixed(2);
