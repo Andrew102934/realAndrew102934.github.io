@@ -3,10 +3,71 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Conc-A-Noodle</title>
+    <title>Conc-A-Noodle Shop</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; }
+        .item { margin: 20px; }
+        .quantity-controls { display: inline-block; }
+        button { margin: 5px; }
+    </style>
 </head>
 <body>
-    <h1>Welcome to Conc-A-Noodle!</h1>
-    <p>We're selling delicious ramen and ice cream around campus.</p>
+    <h1>Welcome to Conc-A-Noodle</h1>
+    <h2>Ramen</h2>
+    <div class="item">
+        <p>Beef Ramen - $6</p>
+        <div class="quantity-controls">
+            <button onclick="changeQuantity('beef', -1)">-</button>
+            <span id="beef-qty">0</span>
+            <button onclick="changeQuantity('beef', 1)">+</button>
+        </div>
+    </div>
+    <div class="item">
+        <p>Regular Ramen - $6</p>
+        <div class="quantity-controls">
+            <button onclick="changeQuantity('regular', -1)">-</button>
+            <span id="regular-qty">0</span>
+            <button onclick="changeQuantity('regular', 1)">+</button>
+        </div>
+    </div>
+    <h2>Ice Cream</h2>
+    <div class="item">
+        <p>1 Scoop - $3</p>
+        <select id="one-scoop-flavor">
+            <option value="chocolate">Chocolate</option>
+            <option value="vanilla">Vanilla</option>
+        </select>
+        <div class="quantity-controls">
+            <button onclick="changeQuantity('one-scoop', -1)">-</button>
+            <span id="one-scoop-qty">0</span>
+            <button onclick="changeQuantity('one-scoop', 1)">+</button>
+        </div>
+    </div>
+    <div class="item">
+        <p>2 Scoops - $5</p>
+        <select id="two-scoops-flavor">
+            <option value="chocolate">Chocolate</option>
+            <option value="vanilla">Vanilla</option>
+        </select>
+        <div class="quantity-controls">
+            <button onclick="changeQuantity('two-scoops', -1)">-</button>
+            <span id="two-scoops-qty">0</span>
+            <button onclick="changeQuantity('two-scoops', 1)">+</button>
+        </div>
+    </div>
+    <br>
+    <button onclick="goToCheckout()">Go to Checkout</button>
+    
+    <script>
+        let cart = { beef: 0, regular: 0, 'one-scoop': 0, 'two-scoops': 0 };
+        function changeQuantity(item, change) {
+            cart[item] = Math.max(0, cart[item] + change);
+            document.getElementById(`${item}-qty`).innerText = cart[item];
+        }
+        function goToCheckout() {
+            localStorage.setItem('cart', JSON.stringify(cart));
+            window.location.href = 'checkout.html';
+        }
+    </script>
 </body>
 </html>
