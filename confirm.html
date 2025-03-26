@@ -17,7 +17,43 @@
     <button onclick="selectPayment('cash')">Pay with Cash</button>
     <br>
     <button id="confirm-btn" onclick="confirmOrder()" disabled>Confirm Order</button>
+    
+    <script>
+        // Retrieving the cart from local storage
+        let orderData = JSON.parse(localStorage.getItem('order'));
+        let cart = orderData.cartDetails || [];
+        let prices = { beef: 6, regular: 6, 'one-scoop': 3, 'two-scoops': 5 };
+        let selectedPayment = '';
+        
+        // Calculate total price from the cart
+        function calculateTotal() {
+            let total = 0;
+            cart.forEach(item => {
+                total += item.total;
+            });
+            document.getElementById('total-price').innerText = total.toFixed(2); // Display total price
+        }
 
-    <script src="script.js"></script>
+        // Select the payment method (Venmo or Cash)
+        function selectPayment(method) {
+            selectedPayment = method;
+            document.getElementById('confirm-btn').disabled = false; // Enable the Confirm button when a payment method is selected
+        }
+
+        // Confirm the order and handle the payment method
+        function confirmOrder() {
+            const totalAmount = parseFloat(document.getElementById('total-price').innerText); // Get total amount from the page
+            
+            if (selectedPayment === 'venmo') {
+                window.location.href = `https://venmo.com/?txn=pay&amount=${totalAmount}&recipients=@Andrew-Salladin`; // Redirect to Venmo
+            } else if (selectedPayment === 'cash') {
+                window.location.href = 'thank-you.html'; // Redirect to thank you page for cash payment
+            } else {
+                alert("Please select a payment method before confirming.");
+            }
+        }
+
+        calculateTotal(); // Run the calculateTotal function when the page loads
+    </script>
 </body>
-</html>
+</
