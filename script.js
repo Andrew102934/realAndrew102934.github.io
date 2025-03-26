@@ -54,7 +54,7 @@ function displayCart() {
     document.getElementById("total-price").innerText = total.toFixed(2);
 }
 
-// Send order via email
+// Send order via email using EmailJS
 function sendOrderEmail() {
     const name = document.getElementById("name").value;
     const dorm = document.getElementById("dorm").value;
@@ -77,12 +77,24 @@ function sendOrderEmail() {
                  + `Order:%0D%0A${cartDetails}%0D%0A`
                  + `Total: $${total.toFixed(2)}`;
 
-        let mailtoLink = `mailto:and.sallad@gmail.com?subject=${subject}&body=${body}`;
-        window.location.href = mailtoLink;
+        // Now, we will use EmailJS to send the email
+        emailjs.send("service_id", "template_id", {
+            from_name: name,
+            from_email: "user_email@example.com", // Use a default email or get from user input if needed
+            subject: subject,
+            content: body,
+            to_email: "and.sallad@gmail.com", // Your email address
+        })
+        .then(function(response) {
+            console.log("SUCCESS!", response);
+            alert("Your order has been confirmed and sent via email.");
+            localStorage.removeItem("cart"); // Clear cart after sending the order
+            window.location.href = "thank-you.html"; // Redirect to thank you page
+        }, function(error) {
+            console.log("FAILED...", error);
+            alert("There was an issue with your order. Please try again.");
+        });
 
-        alert("Order email will be sent via your default email client.");
-        localStorage.removeItem("cart");  // Clear cart after order is placed
-        window.location.href = "thank-you.html";
     } else {
         alert("Please fill out both your name and dorm.");
     }
