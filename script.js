@@ -82,38 +82,42 @@ function confirmOrder(paymentMethod) {
   const name = document.getElementById('name').value;  // Get the name from the checkout page
   const dorm = document.getElementById('dorm').value;  // Get the dorm from the checkout page
   
+  // Prepare the cart details
+  const cartDetails = cart.map(item => ({
+    name: item.name,
+    quantity: item.quantity,
+    price: item.price,
+    total: item.price * item.quantity
+  }));
+
   // Prepare the order details
   const orderDetails = {
-    name: name,
-    dorm: dorm,
-    order: cart,
-    total: totalPrice
+    userInfo: {
+      name: name,
+      dorm: dorm
+    },
+    cart: cartDetails,
+    totalPrice: totalPrice,
+    paymentMethod: paymentMethod
   };
 
   // Send order data to Google Apps Script (Web App)
   fetch('https://script.google.com/macros/s/AKfycby7Pte6LczOeD2AIGcWUIZuCMTcxM1VkWyiZpeHPhwUFCB1Mn3RH-7PF5uTdXQw-VVMJQ/exec', {
     method: 'POST',
     headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
+      'Content-Type': 'application/json', // Use JSON content type
     },
-    body: new URLSearchParams({
-      name: name,
-      dorm: dorm,
-      order: JSON.stringify(cart),
-    })
+    body: JSON.stringify(orderDetails)  // Send the entire order details
   })
-  .then(response => response.text())
-  .then(responseText => {
-    console.log(responseText);  // Log response from Google Apps Script (for debugging)
-    if (paymentMethod === 'venmo') {
-      venmoPayment(totalPrice);  // Redirect to Venmo
-    } else if (paymentMethod === 'cash') {
-      cashPayment();  // Redirect to cash payment thank-you page
-    }
+  .then(response => response.json())
+  .then(data => {
+    console.log('Order submitted:', data);
+    alert('Order confirmed! Thank you!');
+    window.location.href = 'thank-you.html'; // Redirect to a thank-you page
   })
   .catch(error => {
-    alert("There was an error submitting your order. Please try again.");
-    console.error(error);
+    console.error('Error:', error);
+    alert('There was an issue with your order. Please try again.');
   });
 }
 
@@ -123,7 +127,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initializeShoppingPage();
   } else if (document.body.id === 'checkout-page') {
     initializeCheckoutPage();
-    
+
     // Ensure the button exists before adding the event listener
     const confirmBtn = document.getElementById('confirm-btn');
     if (confirmBtn) {
