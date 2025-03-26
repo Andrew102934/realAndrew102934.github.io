@@ -57,18 +57,7 @@
     </div>
     <br>
     <button onclick="goToCheckout()">Go to Checkout</button>
-    
-    <script>
-        let cart = { beef: 0, regular: 0, 'one-scoop': 0, 'two-scoops': 0 };
-        function changeQuantity(item, change) {
-            cart[item] = Math.max(0, cart[item] + change);
-            document.getElementById(`${item}-qty`).innerText = cart[item];
-        }
-        function goToCheckout() {
-            localStorage.setItem('cart', JSON.stringify(cart));
-            window.location.href = 'checkout.html';
-        }
-    </script>
+
     <script src="script.js"></script>
 </body>
 </html>
