@@ -33,7 +33,7 @@
                     cartContainer.innerHTML += `<p>${item.replace('-', ' ')}: ${cart[item]} - $${price}</p>`;
                 }
             }
-            document.getElementById('total-price').innerText = total;
+            document.getElementById('total-price').innerText = total.toFixed(2); // Display total
         }
         
         function goToConfirm() {
@@ -45,5 +45,6 @@
         
         displayCart();
     </script>
+    <script src="script.js"></script>
 </body>
 </html>
