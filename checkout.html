@@ -6,29 +6,44 @@
     <title>Checkout - Conc-A-Noodle</title>
     <style>
         body { font-family: Arial, sans-serif; text-align: center; }
-        button { margin: 10px; padding: 10px 20px; font-size: 16px; }
+        .item { margin: 20px; }
+        button { margin: 5px; }
     </style>
 </head>
 <body>
     <h1>Checkout</h1>
-    
     <div id="cart-items"></div>
-
     <h2>Total: $<span id="total-price">0</span></h2>
-
-    <div>
-        <label for="name">Name:</label>
-        <input type="text" id="name" placeholder="Enter your name" required>
-    </div>
-
-    <div>
-        <label for="dorm">Dorm:</label>
-        <input type="text" id="dorm" placeholder="Enter your dorm" required>
-    </div>
-
-    <button id="confirm-btn" onclick="goToConfirm()">Confirm Order</button>
+    <button onclick="goToConfirm()">Confirm Order</button>
     <button onclick="goBack()">Go Back</button>
-
-    <script src="script.js"></script>
+    
+    <script>
+        let cart = JSON.parse(localStorage.getItem('cart')) || {};
+        let prices = { beef: 6, regular: 6, 'one-scoop': 3, 'two-scoops': 5 };
+        
+        function displayCart() {
+            let cartContainer = document.getElementById('cart-items');
+            cartContainer.innerHTML = '';
+            let total = 0;
+            
+            for (let item in cart) {
+                if (cart[item] > 0) {
+                    let price = prices[item] * cart[item];
+                    total += price;
+                    cartContainer.innerHTML += `<p>${item.replace('-', ' ')}: ${cart[item]} - $${price}</p>`;
+                }
+            }
+            document.getElementById('total-price').innerText = total;
+        }
+        
+        function goToConfirm() {
+            window.location.href = 'confirm.html';
+        }
+        function goBack() {
+            window.location.href = 'index.html';
+        }
+        
+        displayCart();
+    </script>
 </body>
 </html>
