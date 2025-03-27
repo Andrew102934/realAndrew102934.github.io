@@ -7,33 +7,24 @@
     <style>
         body { font-family: Arial, sans-serif; text-align: center; }
         button { margin: 10px; padding: 10px 20px; font-size: 16px; }
-        input { margin: 10px; padding: 10px; font-size: 16px; }
     </style>
     <script type="text/javascript" src="https://cdn.emailjs.com/dist/email.min.js"></script>
 </head>
 <body>
     <h1>Confirm Your Order</h1>
     <h2>Total: $<span id="total-price">0</span></h2>
-
-    <!-- Input Fields for Name and Dorm -->
-    <input type="text" id="name" placeholder="Your Name" required><br>
-    <input type="text" id="dorm" placeholder="Your Dorm" required><br>
-
     <p>Select a payment method:</p>
     <button onclick="selectPayment('venmo')">Pay with Venmo</button>
     <button onclick="selectPayment('cash')">Pay with Cash</button>
     <br>
     <button id="confirm-btn" onclick="confirmOrder()" disabled>Confirm Order</button>
     
-    <div id="cart-items"></div> <!-- Display Cart Items Here -->
-
     <script>
-        // Initialize EmailJS
-        emailjs.init('g5CBsjjNcxqlJfquQ'); // Replace with your actual Public Key
+        emailjs.init('g5CBsjjNcxqlJfquQ'); // Initialize EmailJS with your Public Key
 
         let cart = JSON.parse(localStorage.getItem('cart')) || [];
         let selectedPayment = '';
-
+        
         // Calculate total price from the cart
         function calculateTotal() {
             let total = 0;
@@ -43,28 +34,24 @@
             document.getElementById('total-price').innerText = total.toFixed(2);
         }
 
-        // Display cart items on the order confirmation page
-        function displayCartItems() {
-            let cartContainer = document.getElementById('cart-items');
-            cartContainer.innerHTML = '';
-            cart.forEach(item => {
-                cartContainer.innerHTML += `<p>${item.quantity}x ${item.name} - $${item.total}</p>`;
-            });
-            calculateTotal();
-        }
-
-        // Handle payment method selection
+        // Select payment method
         function selectPayment(method) {
             selectedPayment = method;
-            document.getElementById('confirm-btn').disabled = false; // Enable Confirm button
+            document.getElementById('confirm-btn').disabled = false; // Enable the Confirm button
+            
+            if (method === 'venmo') {
+                // Redirect to Venmo with the total amount
+                const totalAmount = parseFloat(document.getElementById('total-price').innerText);
+                window.location.href = `https://venmo.com/Andrew-Salladin?txn=charge&amount=${totalAmount}&note=Order%20from%20Conc-A-Noodle`;
+            }
         }
 
-        // Function to handle order confirmation and send email via EmailJS
+        // Confirm order and send email
         function confirmOrder() {
             const name = document.getElementById('name').value;
             const dorm = document.getElementById('dorm').value;
             const totalAmount = parseFloat(document.getElementById('total-price').innerText);
-
+            
             if (!name || !dorm) {
                 alert("Please fill out all fields.");
                 return;
@@ -79,13 +66,13 @@
                 totalPrice: totalAmount
             };
 
-            // Send the email using EmailJS
+            // Send email using EmailJS
             emailjs.send('service_fehqca1', 'template_3hwjv1l', {
                 from_name: name,
                 from_dorm: dorm,
-                order_details: JSON.stringify(cart),
-                total_price: totalAmount.toFixed(2),
-                payment_method: selectedPayment
+                order_details: JSON.stringify(cart),  // Send cart items in JSON format
+                payment_method: selectedPayment,
+                total_price: totalAmount.toFixed(2)
             })
             .then(function(response) {
                 console.log('Success:', response);
@@ -98,10 +85,24 @@
             });
         }
 
-        // Display the cart when the page loads
-        window.onload = function() {
-            displayCartItems();
-        };
+        // Load cart and calculate total
+        function loadCart() {
+            let cartContainer = document.getElementById("cart-items");
+            cartContainer.innerHTML = "";
+            let total = 0;
+
+            cart.forEach(item => {
+                if (item.quantity > 0) {
+                    let price = item.price * item.quantity;
+                    total += price;
+                    cartContainer.innerHTML += `<p>${item.quantity}x ${item.name} - $${price}</p>`;
+                }
+            });
+            document.getElementById("total-price").innerText = total.toFixed(2);
+        }
+
+        // Initialize cart display when the page loads
+        document.addEventListener("DOMContentLoaded", loadCart);
     </script>
 </body>
 </html>
