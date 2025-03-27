@@ -7,24 +7,33 @@
     <style>
         body { font-family: Arial, sans-serif; text-align: center; }
         button { margin: 10px; padding: 10px 20px; font-size: 16px; }
+        input { margin: 10px; padding: 10px; font-size: 16px; }
     </style>
     <script type="text/javascript" src="https://cdn.emailjs.com/dist/email.min.js"></script>
-</script>
-
 </head>
 <body>
     <h1>Confirm Your Order</h1>
     <h2>Total: $<span id="total-price">0</span></h2>
+
+    <!-- Input Fields for Name and Dorm -->
+    <input type="text" id="name" placeholder="Your Name" required><br>
+    <input type="text" id="dorm" placeholder="Your Dorm" required><br>
+
     <p>Select a payment method:</p>
     <button onclick="selectPayment('venmo')">Pay with Venmo</button>
     <button onclick="selectPayment('cash')">Pay with Cash</button>
     <br>
     <button id="confirm-btn" onclick="confirmOrder()" disabled>Confirm Order</button>
     
+    <div id="cart-items"></div> <!-- Display Cart Items Here -->
+
     <script>
+        // Initialize EmailJS
+        emailjs.init('g5CBsjjNcxqlJfquQ'); // Replace with your actual Public Key
+
         let cart = JSON.parse(localStorage.getItem('cart')) || [];
         let selectedPayment = '';
-        
+
         // Calculate total price from the cart
         function calculateTotal() {
             let total = 0;
@@ -34,17 +43,28 @@
             document.getElementById('total-price').innerText = total.toFixed(2);
         }
 
-        function selectPayment(method) {
-            selectedPayment = method;
-            document.getElementById('confirm-btn').disabled = false; // Enable the Confirm button
+        // Display cart items on the order confirmation page
+        function displayCartItems() {
+            let cartContainer = document.getElementById('cart-items');
+            cartContainer.innerHTML = '';
+            cart.forEach(item => {
+                cartContainer.innerHTML += `<p>${item.quantity}x ${item.name} - $${item.total}</p>`;
+            });
+            calculateTotal();
         }
 
-        // Function to handle order confirmation and send data via AJAX
+        // Handle payment method selection
+        function selectPayment(method) {
+            selectedPayment = method;
+            document.getElementById('confirm-btn').disabled = false; // Enable Confirm button
+        }
+
+        // Function to handle order confirmation and send email via EmailJS
         function confirmOrder() {
             const name = document.getElementById('name').value;
             const dorm = document.getElementById('dorm').value;
             const totalAmount = parseFloat(document.getElementById('total-price').innerText);
-            
+
             if (!name || !dorm) {
                 alert("Please fill out all fields.");
                 return;
@@ -59,8 +79,29 @@
                 totalPrice: totalAmount
             };
 
-            
+            // Send the email using EmailJS
+            emailjs.send('service_fehqca1', 'template_3hwjv1l', {
+                from_name: name,
+                from_dorm: dorm,
+                order_details: JSON.stringify(cart),
+                total_price: totalAmount.toFixed(2),
+                payment_method: selectedPayment
+            })
+            .then(function(response) {
+                console.log('Success:', response);
+                alert("Your order has been submitted successfully!");
+                localStorage.removeItem("cart");  // Clear cart after order
+                window.location.href = "thank-you.html";  // Redirect to Thank You page
+            }, function(error) {
+                console.error('Error:', error);
+                alert("There was an issue submitting your order. Please try again.");
+            });
         }
+
+        // Display the cart when the page loads
+        window.onload = function() {
+            displayCartItems();
+        };
     </script>
 </body>
 </html>
