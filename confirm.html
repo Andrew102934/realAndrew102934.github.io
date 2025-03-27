@@ -18,6 +18,31 @@
     <br>
     <button id="confirm-btn" onclick="confirmOrder()" disabled>Confirm Order</button>
     
-    <script src="script.js"></script>
+    <script>
+        let cart = JSON.parse(localStorage.getItem('cart')) || {};
+        let prices = { beef: 6, regular: 6, 'one-scoop': 3, 'two-scoops': 5 };
+        let selectedPayment = '';
+        
+        function calculateTotal() {
+            let total = 0;
+            for (let item in cart) {
+                total += (cart[item] * prices[item]);
+            }
+            document.getElementById('total-price').innerText = total;
+        }
+        
+        function selectPayment(method) {
+            selectedPayment = method;
+            document.getElementById('confirm-btn').disabled = false;
+        }
+        
+        function confirmOrder() {
+            alert(`Order confirmed! Payment method: ${selectedPayment}`);
+            localStorage.removeItem('cart');
+            window.location.href = 'index.html';
+        }
+        
+        calculateTotal();
+    </script>
 </body>
 </html>
