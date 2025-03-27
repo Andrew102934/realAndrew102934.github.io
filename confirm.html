@@ -28,7 +28,7 @@
             for (let item in cart) {
                 total += (cart[item] * prices[item]);
             }
-            document.getElementById('total-price').innerText = total;
+            document.getElementById('total-price').innerText = total.toFixed(2);
         }
         
         function selectPayment(method) {
@@ -36,13 +36,27 @@
             document.getElementById('confirm-btn').disabled = false;
         }
         
-        function confirmOrder() {
-            alert(`Order confirmed! Payment method: ${selectedPayment}`);
-            localStorage.removeItem('cart');
-            window.location.href = 'index.html';
+        function venmoPayment(amount) {
+            const venmoURL = `https://venmo.com/?txn=pay&amount=${amount}&recipients=@Andrew-Salladin`;
+            window.location.href = venmoURL;
         }
         
-        calculateTotal();
+        function cashPayment() {
+            window.location.href = 'thank-you.html';  // Redirect to the thank you page for cash payment
+        }
+        
+        function confirmOrder() {
+            const totalAmount = parseFloat(document.getElementById('total-price').innerText);
+            
+            if (selectedPayment === 'venmo') {
+                venmoPayment(totalAmount); // Redirect to Venmo with the total amount pre-filled
+            } else if (selectedPayment === 'cash') {
+                cashPayment(); // Redirect to thank you page for cash payment
+            }
+        }
+        
+        calculateTotal();  // Calculate the total price when the page loads
     </script>
+    <script src="script.js"></script>
 </body>
 </html>
