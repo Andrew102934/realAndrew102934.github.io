@@ -39,7 +39,7 @@ function updateCartDisplay() {
       <div class="cart-item">
         <span>${item.name}</span>
         <span>Quantity: ${item.quantity}</span>
-        <span>$${item.price * item.quantity}</span>
+        <span>$${(item.price * item.quantity).toFixed(2)}</span>
         <button onclick="removeFromCart(${index})">Remove</button>
       </div>
     `;
@@ -79,14 +79,42 @@ function initializeCheckoutPage() {
 function confirmOrder(paymentMethod) {
   const cart = getCart();
   const totalPrice = cart.reduce((total, item) => total + item.price * item.quantity, 0);
-  alert(`Order confirmed! Payment method: ${paymentMethod}. Total: $${totalPrice.toFixed(2)}`);
-  localStorage.setItem('cart', JSON.stringify([]));  // Clear the cart after confirmation
+  
+  if (paymentMethod === 'venmo') {
+    venmoPayment(totalPrice); // Redirect to Venmo with the total price
+  } else if (paymentMethod === 'cash') {
+    cashPayment(); // Redirect to thank you page for cash payment
+  } else {
+    alert('Please select a payment method!');
+  }
 }
 
+// Venmo payment redirection
+function venmoPayment(amount) {
+  const venmoURL = `https://venmo.com/?txn=pay&amount=${amount}&recipients=@Andrew-Salladin`;
+  window.location.href = venmoURL; // Redirect to Venmo
+}
+
+// Cash payment redirection
+function cashPayment() {
+  window.location.href = 'thank-you.html'; // Redirect to thank you page for cash payment
+}
+
+// Confirm order page - Handle payment button click
 document.addEventListener('DOMContentLoaded', () => {
   if (document.body.id === 'shopping-page') {
     initializeShoppingPage();
   } else if (document.body.id === 'checkout-page') {
     initializeCheckoutPage();
+    // Confirm order logic for Venmo or Cash payment on confirmation page
+    const confirmBtn = document.getElementById('confirm-btn');
+    confirmBtn.addEventListener('click', () => {
+      const selectedPayment = document.querySelector('input[name="payment-method"]:checked');
+      if (selectedPayment) {
+        confirmOrder(selectedPayment.value);
+      } else {
+        alert('Please select a payment method');
+      }
+    });
   }
 });
