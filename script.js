@@ -1,18 +1,23 @@
 document.addEventListener("DOMContentLoaded", function () {
     if (document.getElementById("cart-items")) {
-        displayCart();
+        displayCart(); // Display cart items when the checkout page loads
     }
+
+    // Add event listeners for buttons, if applicable
+    document.getElementById("checkout-btn")?.addEventListener('click', goToCheckout);
+    document.getElementById("confirm-btn")?.addEventListener('click', confirmOrder);
 });
 
 // Initialize cart data from localStorage or set to an empty object
-let cart = JSON.parse(localStorage.getItem('cart')) || {};
+let cart = JSON.parse(localStorage.getItem('cart')) || {}; // Default to empty object if no cart
 let prices = { beef: 6, regular: 6, "one-scoop": 3, "two-scoops": 5 };
 let selectedPayment = '';
 
 // Add items to cart
 function addToCart(item) {
-    cart[item] = (cart[item] || 0) + 1;
+    cart[item] = (cart[item] || 0) + 1; // Increment item quantity
     localStorage.setItem('cart', JSON.stringify(cart)); // Save cart to localStorage
+    console.log(cart); // For debugging: check cart content
 }
 
 // Go to the checkout page
@@ -48,10 +53,10 @@ function goToConfirm() {
         const orderData = {
             name: name,
             dorm: dorm,
-            cart: cart,
-            totalPrice: document.getElementById('total-price').innerText
+            cart: cart, // Save the cart object as it is
+            totalPrice: document.getElementById('total-price').innerText // Get the total price
         };
-        localStorage.setItem('orderData', JSON.stringify(orderData));
+        localStorage.setItem('orderData', JSON.stringify(orderData)); // Save order data to localStorage
         window.location.href = 'confirm.html'; // Redirect to the confirm page
     } else {
         alert("Please fill out both your name and dorm.");
@@ -65,7 +70,7 @@ function goBack() {
 
 // Select payment method (Venmo or Cash)
 function selectPayment(method) {
-    selectedPayment = method;
+    selectedPayment = method; // Set selected payment method
     document.getElementById('confirm-btn').disabled = false; // Enable the Confirm button
 }
 
