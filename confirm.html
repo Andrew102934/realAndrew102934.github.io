@@ -18,7 +18,7 @@
     <button onclick="selectPayment('cash')">Pay with Cash</button>
     <br>
     <button id="confirm-btn" onclick="confirmOrder()" disabled>Confirm Order</button>
-    
+
     <script>
         let cart = JSON.parse(localStorage.getItem('cart')) || {};
         let selectedPayment = '';
@@ -52,7 +52,6 @@
                 return;
             }
 
-            // Collect cart data to send
             let cartDetails = "";
             for (let item in cart) {
                 if (cart[item] > 0) {
@@ -61,7 +60,6 @@
                 }
             }
 
-            // Collect order details to send via EmailJS
             const subject = "New Order from Conc-A-Noodle";
             const body = `Name: ${name}%0D%0A`
                        + `Dorm: ${dorm}%0D%0A`
@@ -69,8 +67,7 @@
                        + `Total: $${totalAmount.toFixed(2)}%0D%0A`
                        + `Payment Method: ${selectedPayment}`;
 
-            // Send the order email using EmailJS
-            emailjs.init('g5CBsjjNcxqlJfquQ'); // Initialize EmailJS with your public key
+            emailjs.init('g5CBsjjNcxqlJfquQ');  // Initialize EmailJS with your public key
             emailjs.send('service_fehqca1', 'template_3hwjv1l', {
                 from_name: name,
                 from_dorm: dorm,
@@ -91,7 +88,6 @@
             });
         }
 
-        // Load cart items and calculate total
         function loadCart() {
             let cartContainer = document.getElementById("cart-items");
             cartContainer.innerHTML = "";
