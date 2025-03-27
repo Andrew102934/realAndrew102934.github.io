@@ -15,6 +15,11 @@ function addToCart(item) {
     localStorage.setItem('cart', JSON.stringify(cart)); // Save cart to localStorage
 }
 
+// Go to the checkout page
+function goToCheckout() {
+    window.location.href = 'checkout.html'; // Redirect to checkout page
+}
+
 // Display cart items on checkout page
 function displayCart() {
     let cartContainer = document.getElementById('cart-items');
