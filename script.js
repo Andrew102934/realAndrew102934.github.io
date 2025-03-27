@@ -1,15 +1,24 @@
 document.addEventListener("DOMContentLoaded", function () {
-    displayCart(); // Display cart items when the page loads
+    if (document.getElementById("cart-items")) {
+        displayCart();
+    }
 });
 
 // Initialize cart data from localStorage or set to an empty object
 let cart = JSON.parse(localStorage.getItem('cart')) || {};
 let prices = { beef: 6, regular: 6, "one-scoop": 3, "two-scoops": 5 };
+let selectedPayment = '';
 
-// Display cart items on checkout page and calculate the total
+// Add items to cart
+function addToCart(item) {
+    cart[item] = (cart[item] || 0) + 1;
+    localStorage.setItem('cart', JSON.stringify(cart)); // Save cart to localStorage
+}
+
+// Display cart items on checkout page
 function displayCart() {
     let cartContainer = document.getElementById('cart-items');
-    cartContainer.innerHTML = ''; // Clear the cart container first
+    cartContainer.innerHTML = ''; // Clear cart container first
     let total = 0;
 
     // Loop through the cart and display each item
@@ -17,7 +26,7 @@ function displayCart() {
         if (cart[item] > 0) {
             let price = prices[item] * cart[item];
             total += price;
-            cartContainer.innerHTML += `<p>${item.replace('-', ' ')}: ${cart[item]} - $${price}</p>`;
+            cartContainer.innerHTML += `<p>${cart[item]}x ${item.replace('-', ' ')} - $${price}</p>`;
         }
     }
 
@@ -25,13 +34,12 @@ function displayCart() {
     document.getElementById('total-price').innerText = total.toFixed(2);
 }
 
-// Go to the confirmation page
+// Go to the confirmation page and save order data to localStorage
 function goToConfirm() {
     const name = document.getElementById('name').value;
     const dorm = document.getElementById('dorm').value;
 
     if (name && dorm) {
-        // Save the name, dorm, and cart data to localStorage
         const orderData = {
             name: name,
             dorm: dorm,
@@ -48,4 +56,23 @@ function goToConfirm() {
 // Go back to the shopping page
 function goBack() {
     window.location.href = 'index.html'; // Redirect to the shopping page
+}
+
+// Select payment method (Venmo or Cash)
+function selectPayment(method) {
+    selectedPayment = method;
+    document.getElementById('confirm-btn').disabled = false; // Enable the Confirm button
+}
+
+// Confirm the order and proceed to the next step (for now, just alert)
+function confirmOrder() {
+    const orderData = JSON.parse(localStorage.getItem('orderData'));
+
+    if (selectedPayment) {
+        alert(`Order confirmed! Payment method: ${selectedPayment}. Total: $${orderData.totalPrice}`);
+        localStorage.removeItem('cart'); // Clear the cart
+        window.location.href = 'thank-you.html'; // Redirect to a "Thank You" page
+    } else {
+        alert("Please select a payment method.");
+    }
 }
