@@ -12,49 +12,12 @@
 <body>
     <h1>Confirm Your Order</h1>
     <h2>Total: $<span id="total-price">0</span></h2>
-
     <p>Select a payment method:</p>
     <button onclick="selectPayment('venmo')">Pay with Venmo</button>
     <button onclick="selectPayment('cash')">Pay with Cash</button>
-    
     <br>
     <button id="confirm-btn" onclick="confirmOrder()" disabled>Confirm Order</button>
-
-    <script>
-        let orderData = JSON.parse(localStorage.getItem('order')) || {};
-        let selectedPayment = '';
-
-        // Calculate total price from order data
-        function calculateTotal() {
-            let total = 0;
-            orderData.cartDetails.forEach(item => {
-                total += item.total;
-            });
-            document.getElementById('total-price').innerText = total.toFixed(2);
-        }
-
-        // Select payment method (Venmo or Cash)
-        function selectPayment(method) {
-            selectedPayment = method;
-            document.getElementById('confirm-btn').disabled = false;  // Enable Confirm button
-        }
-
-        // Handle order confirmation
-        function confirmOrder() {
-            const name = orderData.userInfo.name;
-            const dorm = orderData.userInfo.dorm;
-            const totalAmount = parseFloat(document.getElementById('total-price').innerText);
-
-            if (selectedPayment) {
-                alert(`Order confirmed! \nName: ${name} \nDorm: ${dorm} \nPayment Method: ${selectedPayment} \nTotal: $${totalAmount.toFixed(2)}`);
-                localStorage.removeItem("cart");  // Clear the cart after the order
-                window.location.href = "thank-you.html";  // Redirect to Thank You page
-            } else {
-                alert("Please select a payment method.");
-            }
-        }
-
-        calculateTotal();  // Calculate the total when the page loads
-    </script>
+    
+    <script src="script.js"></script>
 </body>
 </html>
