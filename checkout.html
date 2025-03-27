@@ -14,11 +14,11 @@
 <body>
     <h1>Checkout</h1>
     
-    <div id="cart-items"></div>  <!-- Cart items displayed here -->
+    <div id="cart-items"></div>  <!-- Cart items will be displayed here -->
 
     <h2>Total: $<span id="total-price">0</span></h2>
 
-    <!-- New fields for Name and Dorm Information -->
+    <!-- User details -->
     <div class="input-field">
         <label for="name">Name:</label>
         <input type="text" id="name" placeholder="Enter your name" required>
@@ -35,12 +35,12 @@
         let cart = JSON.parse(localStorage.getItem('cart')) || {};
         let prices = { beef: 6, regular: 6, 'one-scoop': 3, 'two-scoops': 5 };
 
-        // Display cart items in the checkout page
+        // Function to display the cart
         function displayCart() {
             let cartContainer = document.getElementById('cart-items');
             cartContainer.innerHTML = '';
             let total = 0;
-            
+
             for (let item in cart) {
                 if (cart[item] > 0) {
                     let price = prices[item] * cart[item];
@@ -51,15 +51,14 @@
             document.getElementById('total-price').innerText = total.toFixed(2);
         }
 
-        // Navigate to the confirm page
+        // Function to go to confirm page
         function goToConfirm() {
             const name = document.getElementById('name').value;
             const dorm = document.getElementById('dorm').value;
 
             if (name && dorm) {
                 const userInfo = { name, dorm };
-                
-                // Collect cart details
+
                 let cartDetails = [];
                 for (let item in cart) {
                     if (cart[item] > 0) {
@@ -67,7 +66,7 @@
                     }
                 }
 
-                // Save user and cart data to localStorage and go to confirm page
+                // Save user and cart data to localStorage and go to the confirm page
                 localStorage.setItem('order', JSON.stringify({ userInfo, cartDetails }));
                 window.location.href = 'confirm.html';
             } else {
@@ -75,7 +74,7 @@
             }
         }
 
-        // Go back to the shopping page
+        // Go back to shopping page
         function goBack() {
             window.location.href = 'index.html';
         }
