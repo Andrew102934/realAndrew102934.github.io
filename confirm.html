@@ -20,59 +20,65 @@
     <button id="confirm-btn" onclick="confirmOrder()" disabled>Confirm Order</button>
     
     <script>
-        emailjs.init('g5CBsjjNcxqlJfquQ'); // Initialize EmailJS with your Public Key
-
-        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+        let cart = JSON.parse(localStorage.getItem('cart')) || {};
         let selectedPayment = '';
-        
+        let prices = { beef: 6, regular: 6, 'one-scoop': 3, 'two-scoops': 5 };
+
         // Calculate total price from the cart
         function calculateTotal() {
             let total = 0;
-            cart.forEach(item => {
-                total += item.total;
-            });
+            for (let item in cart) {
+                if (cart[item] > 0) {
+                    total += prices[item] * cart[item];
+                }
+            }
             document.getElementById('total-price').innerText = total.toFixed(2);
         }
 
-        // Select payment method
+        // Select payment method (Venmo or Cash)
         function selectPayment(method) {
             selectedPayment = method;
             document.getElementById('confirm-btn').disabled = false; // Enable the Confirm button
-            
-            if (method === 'venmo') {
-                // Redirect to Venmo with the total amount
-                const totalAmount = parseFloat(document.getElementById('total-price').innerText);
-                window.location.href = `https://venmo.com/Andrew-Salladin?txn=charge&amount=${totalAmount}&note=Order%20from%20Conc-A-Noodle`;
-            }
         }
 
-        // Confirm order and send email
+        // Handle order confirmation and send email using EmailJS
         function confirmOrder() {
             const name = document.getElementById('name').value;
             const dorm = document.getElementById('dorm').value;
             const totalAmount = parseFloat(document.getElementById('total-price').innerText);
-            
+
             if (!name || !dorm) {
                 alert("Please fill out all fields.");
                 return;
             }
 
             // Collect cart data to send
-            const orderData = {
-                name: name,
-                dorm: dorm,
-                cart: JSON.stringify(cart),  // Send cart data as JSON
-                paymentMethod: selectedPayment,
-                totalPrice: totalAmount
-            };
+            let cartDetails = "";
+            for (let item in cart) {
+                if (cart[item] > 0) {
+                    let itemTotal = prices[item] * cart[item];
+                    cartDetails += `${cart[item]}x ${item.replace('-', ' ')} ($${itemTotal})%0D%0A`;
+                }
+            }
 
-            // Send email using EmailJS
+            // Collect order details to send via EmailJS
+            const subject = "New Order from Conc-A-Noodle";
+            const body = `Name: ${name}%0D%0A`
+                       + `Dorm: ${dorm}%0D%0A`
+                       + `Order:%0D%0A${cartDetails}%0D%0A`
+                       + `Total: $${totalAmount.toFixed(2)}%0D%0A`
+                       + `Payment Method: ${selectedPayment}`;
+
+            // Send the order email using EmailJS
+            emailjs.init('g5CBsjjNcxqlJfquQ'); // Initialize EmailJS with your public key
             emailjs.send('service_fehqca1', 'template_3hwjv1l', {
                 from_name: name,
                 from_dorm: dorm,
-                order_details: JSON.stringify(cart),  // Send cart items in JSON format
+                order_details: cartDetails,
+                total_price: totalAmount.toFixed(2),
                 payment_method: selectedPayment,
-                total_price: totalAmount.toFixed(2)
+                subject: subject,
+                body: body
             })
             .then(function(response) {
                 console.log('Success:', response);
@@ -85,24 +91,23 @@
             });
         }
 
-        // Load cart and calculate total
+        // Load cart items and calculate total
         function loadCart() {
             let cartContainer = document.getElementById("cart-items");
             cartContainer.innerHTML = "";
             let total = 0;
 
-            cart.forEach(item => {
-                if (item.quantity > 0) {
-                    let price = item.price * item.quantity;
+            for (let item in cart) {
+                if (cart[item] > 0) {
+                    let price = prices[item] * cart[item];
                     total += price;
-                    cartContainer.innerHTML += `<p>${item.quantity}x ${item.name} - $${price}</p>`;
+                    cartContainer.innerHTML += `<p>${cart[item]}x ${item.replace("-", " ")} - $${price}</p>`;
                 }
-            });
+            }
             document.getElementById("total-price").innerText = total.toFixed(2);
         }
 
-        // Initialize cart display when the page loads
-        document.addEventListener("DOMContentLoaded", loadCart);
+        loadCart();  // Load cart items when the page loads
     </script>
 </body>
 </html>
