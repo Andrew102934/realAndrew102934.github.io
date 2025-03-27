@@ -53,8 +53,8 @@ function displayCart() {
     }
     document.getElementById("total-price").innerText = total.toFixed(2);
 }
+emailjs.init('g5CBsjjNcxqlJfquQ'); // Replace with your actual Public Key
 
-// Send order via email using EmailJS
 function sendOrderEmail() {
     const name = document.getElementById("name").value;
     const dorm = document.getElementById("dorm").value;
@@ -73,32 +73,35 @@ function sendOrderEmail() {
 
         let subject = "New Order from Conc-A-Noodle";
         let body = `Name: ${name}%0D%0A`
-                 + `Dorm: ${dorm}%0D%0A`
-                 + `Order:%0D%0A${cartDetails}%0D%0A`
-                 + `Total: $${total.toFixed(2)}`;
+                  + `Dorm: ${dorm}%0D%0A`
+                  + `Order:%0D%0A${cartDetails}%0D%0A`
+                  + `Total: $${total.toFixed(2)}`;
 
-        // Now, we will use EmailJS to send the email
-        emailjs.send("service_id", "template_id", {
+        // Send the email using EmailJS
+        emailjs.send('service_fehqca1', 'template_3hwjv1l', {
             from_name: name,
-            from_email: "user_email@example.com", // Use a default email or get from user input if needed
+            from_dorm: dorm,
+            order_details: cartDetails,
+            total_price: total.toFixed(2),
             subject: subject,
-            content: body,
-            to_email: "and.sallad@gmail.com", // Your email address
+            body: body,
         })
         .then(function(response) {
-            console.log("SUCCESS!", response);
-            alert("Your order has been confirmed and sent via email.");
-            localStorage.removeItem("cart"); // Clear cart after sending the order
-            window.location.href = "thank-you.html"; // Redirect to thank you page
+            console.log('Success:', response);
+            alert("Your order has been submitted successfully!");
+            localStorage.removeItem("cart");  // Clear cart after order
+            window.location.href = "thank-you.html";  // Redirect to the Thank You page
         }, function(error) {
-            console.log("FAILED...", error);
-            alert("There was an issue with your order. Please try again.");
+            console.error('Error:', error);
+            alert("There was an issue submitting your order. Please try again.");
         });
-
     } else {
         alert("Please fill out both your name and dorm.");
     }
 }
+
+
+
 
 // Go to checkout page
 function goToCheckout() {
