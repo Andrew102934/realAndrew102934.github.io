@@ -8,102 +8,53 @@
         body { font-family: Arial, sans-serif; text-align: center; }
         button { margin: 10px; padding: 10px 20px; font-size: 16px; }
     </style>
-    <script type="text/javascript" src="https://cdn.emailjs.com/dist/email.min.js"></script>
 </head>
 <body>
     <h1>Confirm Your Order</h1>
     <h2>Total: $<span id="total-price">0</span></h2>
+
     <p>Select a payment method:</p>
     <button onclick="selectPayment('venmo')">Pay with Venmo</button>
     <button onclick="selectPayment('cash')">Pay with Cash</button>
+    
     <br>
     <button id="confirm-btn" onclick="confirmOrder()" disabled>Confirm Order</button>
 
     <script>
-        let cart = JSON.parse(localStorage.getItem('cart')) || {};
+        let orderData = JSON.parse(localStorage.getItem('order')) || {};
         let selectedPayment = '';
-        let prices = { beef: 6, regular: 6, 'one-scoop': 3, 'two-scoops': 5 };
 
-        // Calculate total price from the cart
+        // Calculate total price from order data
         function calculateTotal() {
             let total = 0;
-            for (let item in cart) {
-                if (cart[item] > 0) {
-                    total += prices[item] * cart[item];
-                }
-            }
+            orderData.cartDetails.forEach(item => {
+                total += item.total;
+            });
             document.getElementById('total-price').innerText = total.toFixed(2);
         }
 
         // Select payment method (Venmo or Cash)
         function selectPayment(method) {
             selectedPayment = method;
-            document.getElementById('confirm-btn').disabled = false; // Enable the Confirm button
+            document.getElementById('confirm-btn').disabled = false;  // Enable Confirm button
         }
 
-        // Handle order confirmation and send email using EmailJS
+        // Handle order confirmation
         function confirmOrder() {
-            const name = document.getElementById('name').value;
-            const dorm = document.getElementById('dorm').value;
+            const name = orderData.userInfo.name;
+            const dorm = orderData.userInfo.dorm;
             const totalAmount = parseFloat(document.getElementById('total-price').innerText);
 
-            if (!name || !dorm) {
-                alert("Please fill out all fields.");
-                return;
-            }
-
-            let cartDetails = "";
-            for (let item in cart) {
-                if (cart[item] > 0) {
-                    let itemTotal = prices[item] * cart[item];
-                    cartDetails += `${cart[item]}x ${item.replace('-', ' ')} ($${itemTotal})%0D%0A`;
-                }
-            }
-
-            const subject = "New Order from Conc-A-Noodle";
-            const body = `Name: ${name}%0D%0A`
-                       + `Dorm: ${dorm}%0D%0A`
-                       + `Order:%0D%0A${cartDetails}%0D%0A`
-                       + `Total: $${totalAmount.toFixed(2)}%0D%0A`
-                       + `Payment Method: ${selectedPayment}`;
-
-            emailjs.init('g5CBsjjNcxqlJfquQ');  // Initialize EmailJS with your public key
-            emailjs.send('service_fehqca1', 'template_3hwjv1l', {
-                from_name: name,
-                from_dorm: dorm,
-                order_details: cartDetails,
-                total_price: totalAmount.toFixed(2),
-                payment_method: selectedPayment,
-                subject: subject,
-                body: body
-            })
-            .then(function(response) {
-                console.log('Success:', response);
-                alert("Your order has been submitted successfully!");
-                localStorage.removeItem("cart");  // Clear cart after order
+            if (selectedPayment) {
+                alert(`Order confirmed! \nName: ${name} \nDorm: ${dorm} \nPayment Method: ${selectedPayment} \nTotal: $${totalAmount.toFixed(2)}`);
+                localStorage.removeItem("cart");  // Clear the cart after the order
                 window.location.href = "thank-you.html";  // Redirect to Thank You page
-            }, function(error) {
-                console.error('Error:', error);
-                alert("There was an issue submitting your order. Please try again.");
-            });
-        }
-
-        function loadCart() {
-            let cartContainer = document.getElementById("cart-items");
-            cartContainer.innerHTML = "";
-            let total = 0;
-
-            for (let item in cart) {
-                if (cart[item] > 0) {
-                    let price = prices[item] * cart[item];
-                    total += price;
-                    cartContainer.innerHTML += `<p>${cart[item]}x ${item.replace("-", " ")} - $${price}</p>`;
-                }
+            } else {
+                alert("Please select a payment method.");
             }
-            document.getElementById("total-price").innerText = total.toFixed(2);
         }
 
-        loadCart();  // Load cart items when the page loads
+        calculateTotal();  // Calculate the total when the page loads
     </script>
 </body>
 </html>
