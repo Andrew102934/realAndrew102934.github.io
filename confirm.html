@@ -1,13 +1,42 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <link rel="stylesheet" href="styles.css">
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Confirm Order - Conc-A-Noodle</title>
+  <link rel="stylesheet" href="styles.css">
   <style>
-    body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
-    button { margin: 10px; padding: 10px 20px; font-size: 16px; }
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 20px;
+    }
+    button {
+      margin: 10px;
+      padding: 10px 20px;
+      font-size: 16px;
+    }
+    #payment-options {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+    }
+    .payment-option {
+      display: inline-block;
+      padding: 15px 25px;
+      border: 2px solid #aaa;
+      border-radius: 8px;
+      cursor: pointer;
+      background-color: #f9f9f9;
+      transition: all 0.2s ease;
+    }
+    .payment-option:hover {
+      background-color: #e0e0e0;
+    }
+    .payment-option.selected {
+      background-color: #d0f0d0;
+      border-color: #4CAF50;
+    }
   </style>
 </head>
 <body>
@@ -15,20 +44,19 @@
   <h2>Total: $<span id="total-price">0.00</span></h2>
 
   <p>Select a payment method:</p>
-<div id="payment-options">
-  <label class="payment-option">
-    <input type="radio" name="payment-method" value="venmo" hidden>
-    <span>Pay with Venmo</span>
-  </label>
-  <label class="payment-option">
-    <input type="radio" name="payment-method" value="cash" hidden>
-    <span>Pay with Cash</span>
-  </label>
-</div>
+  <div id="payment-options">
+    <label class="payment-option">
+      <input type="radio" name="payment-method" value="venmo" hidden>
+      <span>Pay with Venmo</span>
+    </label>
+    <label class="payment-option">
+      <input type="radio" name="payment-method" value="cash" hidden>
+      <span>Pay with Cash</span>
+    </label>
+  </div>
 
-<br>
-<button id="confirm-btn" type="button" onclick="confirmOrder()">Confirm Order</button>
-
+  <br>
+  <button id="confirm-btn" type="button" onclick="confirmOrder()" disabled>Confirm Order</button>
 
   <!-- Hidden form for Formspree submission -->
   <form id="orderForm" action="https://formspree.io/f/mwpbkwoq" method="POST" style="display:none;">
@@ -41,13 +69,11 @@
   </form>
 
   <script>
-    // Example cart structure: { beef: 2, regular: 1, 'one-scoop': 0, 'two-scoops': 1 }
     let cart = JSON.parse(localStorage.getItem('cart')) || {};
     const prices = { beef: 6, regular: 6, 'one-scoop': 3, 'two-scoops': 5 };
     let selectedPayment = '';
     let totalAmount = 0;
 
-    // Calculate total price and show it
     function calculateTotal() {
       totalAmount = 0;
       for (const item in cart) {
@@ -58,12 +84,6 @@
       document.getElementById('total-price').textContent = totalAmount.toFixed(2);
     }
 
-    function selectPayment(method) {
-      selectedPayment = method;
-      document.getElementById('confirm-btn').disabled = false;
-    }
-
-    // Redirect functions after form submission
     function redirectAfterSubmit() {
       if (selectedPayment === 'venmo') {
         const venmoURL = `https://venmo.com/?txn=pay&amount=${totalAmount.toFixed(2)}&recipients=@Andrew-Salladin`;
@@ -73,7 +93,6 @@
       }
     }
 
-    // Prepare form inputs and submit
     function confirmOrder() {
       if (!selectedPayment) {
         alert('Please select a payment method!');
@@ -85,7 +104,6 @@
       const dorm = userInfo.dorm || '';
       const email = userInfo.email || '';
 
-      // Build cart summary text
       let cartSummary = '';
       for (const item in cart) {
         if (cart[item] > 0) {
@@ -94,7 +112,6 @@
         }
       }
 
-      // Fill form inputs
       document.getElementById('form-name').value = name;
       document.getElementById('form-dorm').value = dorm;
       document.getElementById('form-cart').value = cartSummary.trim();
@@ -102,7 +119,6 @@
       document.getElementById('form-payment').value = selectedPayment;
       document.getElementById('form-email').value = email;
 
-      // Submit the form using fetch to handle redirect AFTER successful submission
       const form = document.getElementById('orderForm');
       const formData = new FormData(form);
 
@@ -113,32 +129,36 @@
           'Accept': 'application/json'
         }
       })
-      .then(response => {
+      .then(async response => {
         if (response.ok) {
           alert('Order sent successfully!');
           redirectAfterSubmit();
         } else {
-          alert('There was a problem sending your order. Please try again.');
+          const data = await response.json();
+          alert(`Form submission error: ${data.error || response.statusText}`);
         }
       })
-      .catch(() => {
+      .catch((error) => {
+        console.error('Network error:', error);
         alert('There was a network error. Please try again.');
       });
     }
 
-    // Run on page load
+    // Highlight selected payment method and enable confirm button
+    document.querySelectorAll('.payment-option').forEach(label => {
+      label.addEventListener('click', () => {
+        document.querySelectorAll('.payment-option').forEach(l => l.classList.remove('selected'));
+        label.classList.add('selected');
+
+        const input = label.querySelector('input');
+        input.checked = true;
+        selectedPayment = input.value;
+        document.getElementById('confirm-btn').disabled = false;
+      });
+    });
+
+    // On page load
     calculateTotal();
   </script>
-  <script>
-  const confirmBtn = document.getElementById('confirm-btn');
-  const radios = document.querySelectorAll('input[name="payment-method"]');
-
-  radios.forEach(radio => {
-    radio.addEventListener('change', () => {
-      confirmBtn.disabled = false;
-    });
-  });
-</script>
-
 </body>
 </html>
