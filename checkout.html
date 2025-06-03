@@ -1,78 +1,87 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Checkout - Conc-A-Noodle</title>
-    <style>
-        body { font-family: Arial, sans-serif; text-align: center; }
-        .item { margin: 20px; }
-        button { margin: 5px; }
-        .input-field { margin-bottom: 10px; }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Checkout - Conc-A-Noodle</title>
+  <style>
+    body { font-family: Arial, sans-serif; text-align: center; }
+    .item { margin: 20px; }
+    button { margin: 5px; }
+    .input-field { margin-bottom: 10px; }
+  </style>
 </head>
 <body>
-    <h1>Checkout</h1>
-    
-    <!-- Cart items will be displayed here -->
-    <div id="cart-items"></div>
+  <h1>Checkout</h1>
+  <div id="cart-items"></div>
+  <h2>Total: $<span id="total-price">0</span></h2>
 
-    <h2>Total: $<span id="total-price">0</span></h2>
+  <div class="input-field">
+    <label for="name">Name:</label>
+    <input type="text" id="name" placeholder="Enter your name" required>
+  </div>
+  <div class="input-field">
+    <label for="dorm">Dorm:</label>
+    <input type="text" id="dorm" placeholder="Enter your dorm" required>
+  </div>
 
-    <!-- New fields for Name and Dorm Information -->
-    <div class="input-field">
-        <label for="name">Name:</label>
-        <input type="text" id="name" placeholder="Enter your name" required>
-    </div>
-    <div class="input-field">
-        <label for="dorm">Dorm:</label>
-        <input type="text" id="dorm" placeholder="Enter your dorm" required>
-    </div>
+  <button onclick="goToConfirm()">Confirm Order</button>
+  <button onclick="goBack()">Go Back</button>
 
-    <button onclick="goToConfirm()">Confirm Order</button>
-    <button onclick="goBack()">Go Back</button>
-    
-    <script>
-        let cart = JSON.parse(localStorage.getItem('cart')) || {};
-        let prices = { beef: 6, regular: 6, 'one-scoop': 3, 'two-scoops': 5 };
-        
-        // Display cart items in the checkout page
-        function displayCart() {
-            let cartContainer = document.getElementById('cart-items');
-            cartContainer.innerHTML = '';
-            let total = 0;
-            
-            // Loop through cart and display each item
-            for (let item in cart) {
-                if (cart[item] > 0) {
-                    let price = prices[item] * cart[item];
-                    total += price;
-                    cartContainer.innerHTML += `<p>${item.replace('-', ' ')}: ${cart[item]} - $${price}</p>`;
-                }
-            }
-            document.getElementById('total-price').innerText = total.toFixed(2);
+  <script>
+    let cart = JSON.parse(localStorage.getItem('cart')) || {};
+    let prices = { beef: 6, regular: 6, 'one-scoop': 3, 'two-scoops': 5 };
+
+    function displayCart() {
+      let cartContainer = document.getElementById('cart-items');
+      cartContainer.innerHTML = '';
+      let total = 0;
+
+      for (let item in cart) {
+        if (cart[item] > 0) {
+          let price = prices[item] * cart[item];
+          total += price;
+          cartContainer.innerHTML += `<p>${item.replace('-', ' ')}: ${cart[item]} - $${price}</p>`;
         }
-        
-        // Go to the confirm page and save name and dorm info to localStorage
-        function goToConfirm() {
-            const name = document.getElementById('name').value;
-            const dorm = document.getElementById('dorm').value;
+      }
+      document.getElementById('total-price').innerText = total.toFixed(2);
+    }
 
-            if (name && dorm) {
-                const userInfo = { name, dorm };
-                localStorage.setItem('userInfo', JSON.stringify(userInfo)); // Save name and dorm info
-                window.location.href = 'confirm.html'; // Go to the confirm page
-            } else {
-                alert("Please fill out both your name and dorm.");
-            }
-        }
+    function goToConfirm() {
+      const name = document.getElementById('name').value.trim();
+      const dorm = document.getElementById('dorm').value.trim();
 
-        // Go back to the shopping page
-        function goBack() {
-            window.location.href = 'index.html';
+      if (!name || !dorm) {
+        alert("Please fill out both your name and dorm.");
+        return;
+      }
+
+      // Save user info
+      const userInfo = { name, dorm };
+      localStorage.setItem('userInfo', JSON.stringify(userInfo));
+
+      // Save total
+      const total = document.getElementById('total-price').innerText;
+      localStorage.setItem('orderTotal', total);
+
+      // Save readable cart for email
+      let cartText = '';
+      for (let item in cart) {
+        if (cart[item] > 0) {
+          cartText += `${cart[item]}x ${item.replace('-', ' ')}\n`;
         }
-        
-        displayCart(); // Display the cart items when the page loads
-    </script>
+      }
+      localStorage.setItem('cartText', cartText.trim());
+
+      // Go to confirm page
+      window.location.href = 'confirm.html';
+    }
+
+    function goBack() {
+      window.location.href = 'index.html';
+    }
+
+    displayCart();
+  </script>
 </body>
 </html>
