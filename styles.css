@@ -75,3 +75,33 @@ button:hover, .next-btn:hover {
   font-weight: bold;
   margin-top: 1rem;
 }
+.payment-option {
+  display: inline-block;
+  padding: 1rem 2rem;
+  border: 2px solid #ccc;
+  border-radius: 12px;
+  margin: 1rem;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  font-weight: 600;
+  background: white;
+}
+
+/* Hover style */
+.payment-option:hover {
+  border-color: #ff4e50;
+  background: #ffe7e0;
+  box-shadow: 0 6px 20px rgba(255, 78, 80, 0.2);
+  transform: scale(1.05);
+}
+
+/* Selected style using only CSS */
+.payment-option input[type="radio"]:checked + span {
+  border: 2px solid #4CAF50;
+  background: #e6ffe6;
+  box-shadow: 0 0 0 4px rgba(76, 175, 80, 0.3);
+  padding: 1rem 2rem;
+  border-radius: 12px;
+  display: inline-block;
+  transform: scale(1.05);
+}
