@@ -39,9 +39,9 @@
             <option value="vanilla">Vanilla</option>
         </select>
         <div class="quantity-controls">
-            <button onclick="changeQuantity('one-scoop', -1)">-</button>
+            <button class="quantity-button" onclick="changeQuantity('one-scoop', -1)">−</button>
             <span id="one-scoop-qty">0</span>
-            <button onclick="changeQuantity('one-scoop', 1)">+</button>
+            <button class="quantity-button" onclick="changeQuantity('one-scoop', 1)">+</button>
         </div>
     </div>
     <div class="item">
@@ -51,12 +51,12 @@
             <option value="vanilla">Vanilla</option>
         </select>
         <div class="quantity-controls">
-            <button onclick="changeQuantity('two-scoops', -1)">-</button>
+            <button class="quantity-button" onclick="changeQuantity('two-scoops', -1)">−</button>
             <span id="two-scoops-qty">0</span>
-            <button onclick="changeQuantity('two-scoops', 1)">+</button>
+            <button class="quantity-button" onclick="changeQuantity('two-scoops', 1)">+</button>
         </div>
     </div>
-    <br>
+    
     <button onclick="goToCheckout()">Go to Checkout</button>
     
     <script>
