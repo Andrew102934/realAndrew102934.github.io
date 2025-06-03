@@ -15,10 +15,20 @@
   <h2>Total: $<span id="total-price">0.00</span></h2>
 
   <p>Select a payment method:</p>
-  <button type="button" onclick="selectPayment('venmo')">Pay with Venmo</button>
-  <button type="button" onclick="selectPayment('cash')">Pay with Cash</button>
-  <br>
-  <button id="confirm-btn" type="button" onclick="confirmOrder()" disabled>Confirm Order</button>
+<div id="payment-options">
+  <label class="payment-option">
+    <input type="radio" name="payment-method" value="venmo" hidden>
+    <span>Pay with Venmo</span>
+  </label>
+  <label class="payment-option">
+    <input type="radio" name="payment-method" value="cash" hidden>
+    <span>Pay with Cash</span>
+  </label>
+</div>
+
+<br>
+<button id="confirm-btn" type="button" onclick="confirmOrder()">Confirm Order</button>
+
 
   <!-- Hidden form for Formspree submission -->
   <form id="orderForm" action="https://formspree.io/f/mwpbkwoq" method="POST" style="display:none;">
@@ -119,5 +129,16 @@
     // Run on page load
     calculateTotal();
   </script>
+  <script>
+  const confirmBtn = document.getElementById('confirm-btn');
+  const radios = document.querySelectorAll('input[name="payment-method"]');
+
+  radios.forEach(radio => {
+    radio.addEventListener('change', () => {
+      confirmBtn.disabled = false;
+    });
+  });
+</script>
+
 </body>
 </html>
