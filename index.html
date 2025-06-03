@@ -7,43 +7,50 @@
   <style>
     body {
       margin: 0;
-      padding: 0;
-      font-family: 'Arial', sans-serif;
-      background: linear-gradient(to bottom right, #ffd54f, #ff7043);
+      font-family: Arial, sans-serif;
+      background-image: url('ND-Shoyu-Ramen-qflv-mediumSquareAt3X.jpg');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
       height: 100vh;
+      color: white;
       display: flex;
-      flex-direction: column;
-      justify-content: center;
       align-items: center;
+      justify-content: center;
+    }
+
+    .overlay {
+      background-color: rgba(0, 0, 0, 0.6);
+      padding: 40px;
       text-align: center;
-      color: #222;
+      border-radius: 16px;
     }
 
     h1 {
-      font-size: 3em;
+      font-size: 48px;
       margin-bottom: 20px;
     }
 
-    button {
+    a.button {
+      display: inline-block;
       padding: 15px 30px;
-      font-size: 1.2em;
-      border: none;
-      background-color: #fff;
-      color: #ff5722;
+      font-size: 20px;
+      color: black;
+      background-color: #ffc107;
       border-radius: 8px;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      text-decoration: none;
+      font-weight: bold;
     }
 
-    button:hover {
-      background-color: #ffe0b2;
-      transform: scale(1.05);
+    a.button:hover {
+      background-color: #ffca28;
     }
   </style>
 </head>
 <body>
-  <h1>Welcome to Conc-A-Noodle</h1>
-  <button onclick="location.href='order.html'">Order Here</button>
+  <div class="overlay">
+    <h1>Welcome to Conc-A-Noodle</h1>
+    <a class="button" href="index.html">Order Here</a>
+  </div>
 </body>
 </html>
