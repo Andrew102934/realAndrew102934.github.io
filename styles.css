@@ -22,7 +22,7 @@ body {
 }
 
 /* Plus and Minus buttons */
-.quantity-button {
+.changeQuantity {
   background-color: transparent;
   border: 2px solid white;
   color: white;
@@ -38,7 +38,7 @@ body {
   transition: background-color 0.2s ease, transform 0.2s ease;
 }
 
-.quantity-button:hover {
+.changeQuantity:hover {
   background-color: rgba(255, 255, 255, 0.2);
   transform: scale(1.1);
 }
