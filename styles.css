@@ -164,3 +164,6 @@ select:focus {
   background-color: white;
   color: black;
 }
+button, input, select {
+  font-size: 16px;
+}
