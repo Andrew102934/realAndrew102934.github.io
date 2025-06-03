@@ -1,0 +1,77 @@
+
+/* Import Google Font */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+
+/* General Body Style */
+body {
+  font-family: 'Poppins', sans-serif;
+  margin: 0;
+  padding: 0;
+  background: linear-gradient(120deg, #f6d365 0%, #fda085 100%);
+  color: #333;
+}
+
+/* Centered container box */
+.container {
+  max-width: 800px;
+  margin: 2rem auto;
+  background: white;
+  padding: 2rem;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+/* Buttons and Next button */
+button, .next-btn {
+  background: linear-gradient(to right, #f9d423, #ff4e50);
+  border: none;
+  border-radius: 12px;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
+}
+
+button:hover, .next-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+}
+
+/* Payment option styles */
+.payment-option {
+  display: inline-block;
+  padding: 1rem 2rem;
+  border: 2px solid #ccc;
+  border-radius: 12px;
+  margin: 1rem;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.payment-option:hover {
+  border-color: #ff4e50;
+  background: #ffe7e0;
+  box-shadow: 0 6px 20px rgba(255, 78, 80, 0.2);
+  transform: scale(1.05);
+}
+
+/* Cart item styling */
+.cart-item {
+  padding: 1rem;
+  margin-bottom: 1rem;
+  background: #f8f8f8;
+  border-radius: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Total price section */
+#total-price {
+  font-size: 1.25rem;
+  font-weight: bold;
+  margin-top: 1rem;
+}
