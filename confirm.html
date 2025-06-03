@@ -1,73 +1,100 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Confirm Order - Conc-A-Noodle</title>
-    <style>
-        body { font-family: Arial, sans-serif; text-align: center; }
-        button { margin: 10px; padding: 10px 20px; font-size: 16px; }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Confirm Order - Conc-A-Noodle</title>
+  <style>
+    body { font-family: Arial, sans-serif; text-align: center; }
+    button { margin: 10px; padding: 10px 20px; font-size: 16px; }
+  </style>
 </head>
 <body>
-    <h1>Confirm Your Order</h1>
-    <h2>Total: $<span id="total-price">0</span></h2>
-    <p>Select a payment method:</p>
-    <button onclick="selectPayment('venmo')">Pay with Venmo</button>
-    <button onclick="selectPayment('cash')">Pay with Cash</button>
-    <br>
-    <button id="confirm-btn" onclick="confirmOrder()" disabled>Confirm Order</button>
-    
-    <script>
-        // Retrieving the cart from local storage
-        let cart = JSON.parse(localStorage.getItem('cart')) || [];
-        let prices = { beef: 6, regular: 6, 'one-scoop': 3, 'two-scoops': 5 };
-        let selectedPayment = '';
+  <h1>Confirm Your Order</h1>
+  <h2>Total: $<span id="total-price">0</span></h2>
+  <p>Select a payment method:</p>
+  <button onclick="selectPayment('venmo')">Pay with Venmo</button>
+  <button onclick="selectPayment('cash')">Pay with Cash</button>
+  <br>
+  <button id="confirm-btn" onclick="confirmOrder()" disabled>Confirm Order</button>
 
-        // Calculate total price from the cart
-        function calculateTotal() {
-            let total = 0;
-            // Loop through the cart and calculate total
-            for (let item in cart) {
-                if (cart[item] > 0) {
-                    total += (prices[item] * cart[item]);
-                }
-            }
-            document.getElementById('total-price').innerText = total.toFixed(2); // Display total price
+  <!-- Hidden form for email submission via Formspree -->
+  <form id="orderForm" action="https://formspree.io/f/mwpbkwoq" method="POST" style="display: none;">
+    <input type="hidden" name="name" id="form-name">
+    <input type="hidden" name="dorm" id="form-dorm">
+    <input type="hidden" name="cart" id="form-cart">
+    <input type="hidden" name="total" id="form-total">
+    <input type="hidden" name="payment" id="form-payment">
+  </form>
+
+  <script>
+    let cart = JSON.parse(localStorage.getItem('cart')) || {};
+    let prices = { beef: 6, regular: 6, 'one-scoop': 3, 'two-scoops': 5 };
+    let selectedPayment = '';
+    let totalAmount = 0;
+
+    // Calculate and display total
+    function calculateTotal() {
+      totalAmount = 0;
+      for (let item in cart) {
+        if (cart[item] > 0) {
+          totalAmount += (prices[item] * cart[item]);
         }
+      }
+      document.getElementById('total-price').innerText = totalAmount.toFixed(2);
+    }
 
-        // Select the payment method (Venmo or Cash)
-        function selectPayment(method) {
-            selectedPayment = method;
-            document.getElementById('confirm-btn').disabled = false; // Enable the Confirm button when a payment method is selected
+    function selectPayment(method) {
+      selectedPayment = method;
+      document.getElementById('confirm-btn').disabled = false;
+    }
+
+    function venmoPayment(amount) {
+      const venmoURL = `https://venmo.com/?txn=pay&amount=${amount}&recipients=@Andrew-Salladin`;
+      window.location.href = venmoURL;
+    }
+
+    function cashPayment() {
+      window.location.href = 'thank-you.html';
+    }
+
+    // Send email via Formspree
+    function sendOrderEmail() {
+      const name = JSON.parse(localStorage.getItem('userInfo'))?.name || '';
+      const dorm = JSON.parse(localStorage.getItem('userInfo'))?.dorm || '';
+
+      let cartText = '';
+      for (let item in cart) {
+        if (cart[item] > 0) {
+          cartText += `${item.replace('-', ' ')}: ${cart[item]}\n`;
         }
+      }
 
-        // Function to handle Venmo payment redirection
-        function venmoPayment(amount) {
-            const venmoURL = `https://venmo.com/?txn=pay&amount=${amount}&recipients=@Andrew-Salladin`; // Use your Venmo username here
-            window.location.href = venmoURL; // Redirect to Venmo to pay
-        }
+      document.getElementById('form-name').value = name;
+      document.getElementById('form-dorm').value = dorm;
+      document.getElementById('form-cart').value = cartText.trim();
+      document.getElementById('form-total').value = totalAmount.toFixed(2);
+      document.getElementById('form-payment').value = selectedPayment;
 
-        // Function to handle cash payment and redirect to thank-you page
-        function cashPayment() {
-            window.location.href = 'thank-you.html'; // Redirect to thank you page for cash payment
-        }
+      document.getElementById('orderForm').submit();
+    }
 
-        // Confirm the order and handle the payment method
-        function confirmOrder() {
-            const totalAmount = parseFloat(document.getElementById('total-price').innerText); // Get total amount from the page
-            
-            if (selectedPayment === 'venmo') {
-                venmoPayment(totalAmount); // Redirect to Venmo with the total amount
-            } else if (selectedPayment === 'cash') {
-                cashPayment(); // Redirect to thank you page for cash payment
-            } else {
-                alert("Please select a payment method before confirming.");
-            }
-        }
+    function confirmOrder() {
+      if (!selectedPayment) {
+        alert("Please select a payment method before confirming.");
+        return;
+      }
 
-        // Run the calculateTotal function when the page loads
-        calculateTotal(); 
-    </script>
+      sendOrderEmail(); // Submit the order email
+
+      if (selectedPayment === 'venmo') {
+        venmoPayment(totalAmount.toFixed(2));
+      } else if (selectedPayment === 'cash') {
+        cashPayment();
+      }
+    }
+
+    calculateTotal();
+  </script>
 </body>
 </html>
