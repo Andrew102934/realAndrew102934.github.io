@@ -145,7 +145,7 @@ select {
   border: 2px solid white;
   border-radius: 8px;
   padding: 0.5rem 1rem;
-  font-size: 1rem;
+  font-size: .7rem;
   appearance: none;
   -webkit-appearance: none; /* For Safari */
   -moz-appearance: none;    /* For Firefox */
