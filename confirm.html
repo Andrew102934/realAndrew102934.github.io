@@ -86,7 +86,7 @@
 
     function redirectAfterSubmit() {
       if (selectedPayment === 'venmo') {
-        const venmoURL = `https://venmo.com/?txn=pay&amount=${totalAmount.toFixed(2)}&recipients=@Andrew-Salladin`;
+        const venmoURL = `venmo://paycharge?txn=pay&recipients=Andrew-Salladin&amount=${totalAmount.toFixed(2)}&note=Conc-A-Noodle%20Order`;
         window.location.href = venmoURL;
       } else if (selectedPayment === 'cash') {
         window.location.href = 'thank-you.html';
